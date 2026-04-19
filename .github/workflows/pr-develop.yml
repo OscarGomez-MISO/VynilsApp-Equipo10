@@ -1,0 +1,137 @@
+name: Feature -> Develop PR
+
+on:
+  push:
+    branches:
+      - "feature*"
+      - "feature/**"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  android-tests:
+    name: Android Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run unit tests
+        run: ./gradlew test --no-daemon
+
+  create-pr:
+    name: Create PR to develop
+    needs: android-tests
+    runs-on: ubuntu-latest
+    outputs:
+      pr_number: ${{ steps.pr.outputs.pr_number }}
+      pr_node_id: ${{ steps.pr.outputs.pr_node_id }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create or update PR
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const head = context.ref.replace('refs/heads/', '');
+            const base = 'develop';
+            const actor = context.actor;
+            const commitMessage = (context.payload.head_commit && context.payload.head_commit.message) || '';
+
+            // Verificar si ya existe un PR abierto
+            const { data: pulls } = await github.rest.pulls.list({
+              owner,
+              repo,
+              state: 'open',
+              head: `${owner}:${head}`,
+              base,
+              per_page: 1,
+            });
+
+            if (pulls.length > 0) {
+              const existing = pulls[0];
+              core.info(`PR ya existe: #${existing.number}`);
+              core.setOutput('pr_number', String(existing.number));
+              core.setOutput('pr_node_id', existing.node_id);
+              return;
+            }
+
+            // Crear nuevo PR
+            const title = `[${actor}] ${head} -> ${base}`;
+            const body = [
+              '## Pull Request generado automáticamente',
+              '',
+              `**Autor:** @${actor}`,
+              `**Rama origen:** \`${head}\``,
+              `**Rama destino:** \`${base}\``,
+              '',
+              '### Último commit',
+              `- **SHA:** \`${context.sha.substring(0, 7)}\``,
+              `- **Mensaje:** ${commitMessage}`,
+              '',
+              '---',
+              '_Este PR fue creado automáticamente por GitHub Actions._',
+              '_Se fusionará con **squash and merge** cuando tenga aprobación y los checks pasen._'
+            ].join('\n');
+
+            const { data: created } = await github.rest.pulls.create({
+              owner,
+              repo,
+              title,
+              head,
+              base,
+              body,
+              maintainer_can_modify: true,
+            });
+
+            core.info(`PR creado: #${created.number} por ${actor}`);
+            core.setOutput('pr_number', String(created.number));
+            core.setOutput('pr_node_id', created.node_id);
+
+  enable-auto-merge:
+    name: Enable auto-merge (squash)
+    needs: create-pr
+    if: needs.create-pr.outputs.pr_node_id != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable auto-merge
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pullRequestId = `${{ needs.create-pr.outputs.pr_node_id }}`;
+            
+            try {
+              await github.graphql(`
+                mutation($pullRequestId: ID!) {
+                  enablePullRequestAutoMerge(input: {
+                    pullRequestId: $pullRequestId,
+                    mergeMethod: SQUASH
+                  }) {
+                    pullRequest {
+                      number
+                    }
+                  }
+                }
+              `, { pullRequestId });
+
+              core.info(`Auto-merge (squash) habilitado para PR #${{ needs.create-pr.outputs.pr_number }}`);
+            } catch (error) {
+              core.warning(`No se pudo habilitar auto-merge: ${error.message}`);
+              core.warning('Verifica que auto-merge esté habilitado en la configuración del repositorio.');
+            }
