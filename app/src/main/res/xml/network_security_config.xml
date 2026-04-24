@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Permite HTTP plano solo al emulador local (10.0.2.2 = localhost del host) -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">10.0.2.2</domain>
+        <domain includeSubdomains="false">localhost</domain>
+    </domain-config>
+    <!-- El resto del tráfico (ej. Heroku HTTPS) mantiene la política segura por defecto -->
+    <base-config cleartextTrafficPermitted="false" />
+</network-security-config>
