@@ -2,4 +2,13 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Welcome screen -->
+    <color name="color_background">#1E1A18</color>
+    <color name="color_orange_start">#D4904A</color>
+    <color name="color_orange_end">#C07840</color>
+    <color name="color_orange_primary">#C88B4A</color>
+    <color name="color_pink_accent">#D9566A</color>
+    <color name="color_text_hint">#8A8A8A</color>
+    <color name="color_surface_elevated">#2E2824</color>
 </resources>

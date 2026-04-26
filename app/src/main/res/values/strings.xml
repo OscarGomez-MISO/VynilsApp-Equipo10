@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">VynilsAppEquipo10</string>
+
+    <!-- Welcome screen -->
+    <string name="welcome_title">Vinilos</string>
+    <string name="welcome_heading">Tu bóveda sonora te espera</string>
+    <string name="welcome_subtitle">THE EDITORIAL COLLECTOR</string>
+    <string name="btn_enter_collector">ENTRAR COMO COLECCIONISTA  →</string>
+    <string name="btn_explore_visitor">EXPLORAR COMO VISITANTE</string>
+    <string name="divider_or">O ACCEDE MEDIANTE</string>
+    <string name="btn_google">G   Google</string>
+    <string name="btn_apple">Apple</string>
+    <string name="welcome_signup_prefix">¿Eres nuevo? </string>
+    <string name="welcome_signup_link">Únete a la sociedad</string>
 </resources>
