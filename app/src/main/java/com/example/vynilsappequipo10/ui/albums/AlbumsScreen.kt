@@ -259,7 +259,7 @@ private fun SearchBar(query: String, onQueryChange: (String) -> Unit) {
                     textStyle = TextStyle(color = Color.White, fontSize = 14.sp),
                     cursorBrush = SolidColor(ColorOrangePrimary),
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().testTag("album_search_field")
                 )
             }
         }

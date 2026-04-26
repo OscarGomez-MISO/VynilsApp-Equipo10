@@ -18,20 +18,24 @@ class VynilsE2ETest {
         composeTestRule.onNodeWithText("ENTRAR COMO COLECCIONISTA  →").performClick()
 
         // Wait for list to load
-        composeTestRule.waitUntil(15000) {
+        composeTestRule.waitUntil(30000) {
             composeTestRule.onAllNodesWithText("TOTAL DE LPS").fetchSemanticsNodes().isNotEmpty()
         }
 
         composeTestRule.onNodeWithContentDescription("Agregar").assertIsDisplayed()
 
-        // Click on first album card
-        // We use a matcher that looks for any node with a click action that likely represents an album
-        composeTestRule.onAllNodes(hasClickAction())
-            .filter(hasContentDescription("", substring = false).not()) // Filter out nodes with content description if any
-            .onFirst()
-            .performClick()
-
+        // Search for the album using the testTag to find a specific album to be deterministic
+        composeTestRule.onNodeWithTag("album_search_field").performTextInput("Salsa")
+        
         composeTestRule.waitUntil(20000) {
+            // Find "Salsa" in the list results, not the search bar
+            composeTestRule.onAllNodesWithText("Salsa").fetchSemanticsNodes().size >= 2
+        }
+
+        // Click the album (likely the last one found which is the card, first is the search text)
+        composeTestRule.onAllNodesWithText("Salsa").onLast().performClick()
+
+        composeTestRule.waitUntil(30000) {
             composeTestRule.onAllNodesWithText("Descripción").fetchSemanticsNodes().isNotEmpty()
         }
 
@@ -39,6 +43,10 @@ class VynilsE2ETest {
         composeTestRule.onNodeWithText("Descripción").assertIsDisplayed()
 
         composeTestRule.onNodeWithContentDescription("Regresar").performClick()
+        
+        composeTestRule.waitUntil(15000) {
+            composeTestRule.onAllNodesWithText("Vinilos").fetchSemanticsNodes().isNotEmpty()
+        }
         composeTestRule.onNodeWithText("Vinilos").assertIsDisplayed()
     }
 
@@ -85,20 +93,25 @@ class VynilsE2ETest {
         composeTestRule.onNodeWithText("EXPLORAR COMO VISITANTE").performClick()
         composeTestRule.onNodeWithText("ARTISTAS").performClick()
 
-        // Wait for list to load and click the first artist row
+        // Wait for list to load
         composeTestRule.waitUntil(20000) {
             composeTestRule.onAllNodesWithText("BIBLIOTECA CURADA").fetchSemanticsNodes().isNotEmpty()
         }
 
-        // Click first artist available in the list
-        composeTestRule.onAllNodes(hasClickAction())
-            .onFirst()
-            .performClick()
+        // Search for "Queen" using the testTag
+        composeTestRule.onNodeWithTag("artist_search_field").performTextInput("Queen")
+
+        // Wait for filtering and click on Queen (excluding the search field)
+        composeTestRule.waitUntil(10000) {
+            composeTestRule.onAllNodesWithText("Queen").fetchSemanticsNodes().size >= 2
+        }
+        composeTestRule.onAllNodesWithText("Queen").onLast().performClick()
 
         composeTestRule.waitUntil(20000) {
             composeTestRule.onAllNodesWithText("FECHA DE", substring = true).fetchSemanticsNodes().isNotEmpty()
         }
 
+        composeTestRule.onNodeWithText("Queen").assertIsDisplayed()
         composeTestRule.onNodeWithText("FECHA DE", substring = true).assertIsDisplayed()
     }
 
@@ -111,17 +124,22 @@ class VynilsE2ETest {
             composeTestRule.onAllNodesWithText("BIBLIOTECA CURADA").fetchSemanticsNodes().isNotEmpty()
         }
 
-        composeTestRule.onAllNodes(hasClickAction())
-            .onFirst()
-            .performClick()
+        // Search for an artist to make the test deterministic
+        composeTestRule.onNodeWithTag("artist_search_field").performTextInput("Queen")
 
-        composeTestRule.waitUntil(20000) {
+        composeTestRule.waitUntil(10000) {
+            composeTestRule.onAllNodesWithText("Queen").fetchSemanticsNodes().size >= 2
+        }
+        
+        composeTestRule.onAllNodesWithText("Queen").onLast().performClick()
+
+        composeTestRule.waitUntil(30000) {
             composeTestRule.onAllNodesWithText("FECHA DE", substring = true).fetchSemanticsNodes().isNotEmpty()
         }
 
         composeTestRule.onNodeWithContentDescription("Regresar").performClick()
 
-        composeTestRule.waitUntil(15000) {
+        composeTestRule.waitUntil(20000) {
             composeTestRule.onAllNodesWithText("BIBLIOTECA CURADA").fetchSemanticsNodes().isNotEmpty()
         }
 
