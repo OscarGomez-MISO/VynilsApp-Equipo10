@@ -1,7 +1,9 @@
 package com.example.vynilsappequipo10.ui.albums.albumDetail
 
 import android.graphics.drawable.ColorDrawable
+import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -193,10 +196,15 @@ private fun SectionTitle(title: String) {
 
 @Composable
 private fun TrackItem(track: Track) {
+    val context = LocalContext.current
     Surface(
         color = ColorSurface,
         shape = RoundedCornerShape(8.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                Toast.makeText(context, "Funcionalidad en desarrollo", Toast.LENGTH_SHORT).show()
+            }
     ) {
         Row(
             modifier = Modifier.padding(12.dp),
@@ -222,8 +230,13 @@ private fun TrackItem(track: Track) {
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun PerformerItem(performer: Performer) {
+    val context = LocalContext.current
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                Toast.makeText(context, "Funcionalidad en desarrollo", Toast.LENGTH_SHORT).show()
+            },
         verticalAlignment = Alignment.CenterVertically
     ) {
         GlideImage(
@@ -258,10 +271,15 @@ private fun PerformerItem(performer: Performer) {
 
 @Composable
 private fun CommentItem(comment: Comment) {
+    val context = LocalContext.current
     Surface(
         color = ColorSurface,
         shape = RoundedCornerShape(12.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                Toast.makeText(context, "Funcionalidad en desarrollo", Toast.LENGTH_SHORT).show()
+            }
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {

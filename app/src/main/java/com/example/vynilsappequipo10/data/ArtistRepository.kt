@@ -6,11 +6,11 @@ import com.example.vynilsappequipo10.data.remote.RetrofitClient
 import com.example.vynilsappequipo10.domain.Artist
 import com.example.vynilsappequipo10.domain.ArtistType
 
-class ArtistRepository(
+open class ArtistRepository(
     private val musicianService: MusicianService = RetrofitClient.musicianService,
     private val bandService: BandService = RetrofitClient.bandService
 ) {
-    suspend fun getArtists(): List<Artist> {
+    open suspend fun getArtists(): List<Artist> {
         val musicians = musicianService.getMusicians().map { m ->
             Artist(
                 id = m.id,
@@ -36,7 +36,7 @@ class ArtistRepository(
         return musicians + bands
     }
 
-    suspend fun getArtistById(id: Int, type: ArtistType): Artist {
+    open suspend fun getArtistById(id: Int, type: ArtistType): Artist {
         return if (type == ArtistType.MUSICIAN) {
             val m = musicianService.getMusicianById(id)
             Artist(id = m.id, name = m.name, image = m.image, description = m.description,

@@ -2,6 +2,7 @@ package com.example.vynilsappequipo10.ui.artists.artistDetail
 
 import androidx.compose.ui.platform.testTag
 import android.graphics.drawable.ColorDrawable
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -92,6 +94,7 @@ fun ArtistDetailScreen(
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun ArtistDetailContent(artist: Artist, onAlbumClick: (Int) -> Unit) {
+    val context = LocalContext.current
     Column(
     modifier = Modifier
         .fillMaxSize()
@@ -149,7 +152,9 @@ private fun ArtistDetailContent(artist: Artist, onAlbumClick: (Int) -> Unit) {
 
             Spacer(Modifier.height(24.dp))
             Button(
-                onClick = {},
+                onClick = {
+                    Toast.makeText(context, "Funcionalidad en desarrollo", Toast.LENGTH_SHORT).show()
+                },
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = ColorOrangePrimary),
                 shape = RoundedCornerShape(25.dp)
@@ -165,7 +170,9 @@ private fun ArtistDetailContent(artist: Artist, onAlbumClick: (Int) -> Unit) {
 
             Spacer(Modifier.height(12.dp))
             Button(
-                onClick = {},
+                onClick = {
+                    Toast.makeText(context, "Funcionalidad en desarrollo", Toast.LENGTH_SHORT).show()
+                },
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = ColorSurface),
                 shape = RoundedCornerShape(25.dp)
@@ -188,7 +195,15 @@ private fun ArtistDetailContent(artist: Artist, onAlbumClick: (Int) -> Unit) {
                     fontWeight = FontWeight.Bold,
                     lineHeight = 28.sp
                 )
-                Text(text = "VER TODA LA\nCOLECCION", color = ColorOrangePrimary, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                Text(
+                    text = "VER TODA LA\nCOLECCION",
+                    color = ColorOrangePrimary,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable {
+                        Toast.makeText(context, "Funcionalidad en desarrollo", Toast.LENGTH_SHORT).show()
+                    }
+                )
             }
             Spacer(Modifier.height(16.dp))
             Row(

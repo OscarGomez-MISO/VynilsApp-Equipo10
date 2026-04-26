@@ -239,7 +239,7 @@ private fun ArtistsSearchBar(
                     ),
                     cursorBrush = SolidColor(ColorOrangePrimary),
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().testTag("artist_search_field")
                 )
             }
         }

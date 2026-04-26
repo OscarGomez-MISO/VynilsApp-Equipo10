@@ -1,6 +1,7 @@
 package com.example.vynilsappequipo10.ui.albums
 
 import android.graphics.drawable.ColorDrawable
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -44,6 +45,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -150,18 +152,23 @@ private fun AlbumsContent(
 
 @Composable
 private fun AlbumsHeader(onLogout: () -> Unit) {
+    val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            imageVector = Icons.Default.Menu,
-            contentDescription = "Menú",
-            tint = Color.White,
-            modifier = Modifier.size(24.dp)
-        )
+        IconButton(onClick = {
+            Toast.makeText(context, "Funcionalidad en desarrollo", Toast.LENGTH_SHORT).show()
+        }) {
+            Icon(
+                imageVector = Icons.Default.Menu,
+                contentDescription = "Menú",
+                tint = Color.White,
+                modifier = Modifier.size(24.dp)
+            )
+        }
         Spacer(Modifier.width(12.dp))
         Text(
             text = "Vinilos",
@@ -252,7 +259,7 @@ private fun SearchBar(query: String, onQueryChange: (String) -> Unit) {
                     textStyle = TextStyle(color = Color.White, fontSize = 14.sp),
                     cursorBrush = SolidColor(ColorOrangePrimary),
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().testTag("album_search_field")
                 )
             }
         }
