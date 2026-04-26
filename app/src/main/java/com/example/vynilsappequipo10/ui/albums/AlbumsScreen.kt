@@ -2,6 +2,7 @@ package com.example.vynilsappequipo10.ui.albums
 
 import android.graphics.drawable.ColorDrawable
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -29,6 +33,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -52,9 +57,13 @@ import com.example.vynilsappequipo10.ui.theme.ColorOrangePrimary
 import com.example.vynilsappequipo10.ui.theme.ColorSurface
 import com.example.vynilsappequipo10.ui.theme.ColorTextHint
 
+import androidx.compose.material.icons.filled.Home
+
 @Composable
 fun AlbumsScreen(
     modifier: Modifier = Modifier,
+    onAlbumClick: (Int) -> Unit,
+    onLogout: () -> Unit,
     viewModel: AlbumsViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -102,7 +111,9 @@ fun AlbumsScreen(
                     albums = uiState.albums,
                     searchQuery = uiState.searchQuery
                 ),
-                onSearchQueryChange = viewModel::onSearchQueryChange
+                onSearchQueryChange = viewModel::onSearchQueryChange,
+                onAlbumClick = onAlbumClick,
+                onLogout = onLogout
             )
         }
     }
@@ -112,7 +123,9 @@ fun AlbumsScreen(
 private fun AlbumsContent(
     modifier: Modifier,
     uiState: AlbumsUiState,
-    onSearchQueryChange: (String) -> Unit
+    onSearchQueryChange: (String) -> Unit,
+    onAlbumClick: (Int) -> Unit,
+    onLogout: () -> Unit
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -121,7 +134,7 @@ private fun AlbumsContent(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        item(span = { GridItemSpan(2) }) { AlbumsHeader() }
+        item(span = { GridItemSpan(2) }) { AlbumsHeader(onLogout) }
         item(span = { GridItemSpan(2) }) { StatsSection(total = uiState.albums.size) }
         item(span = { GridItemSpan(2) }) {
             SearchBar(
@@ -130,13 +143,13 @@ private fun AlbumsContent(
             )
         }
         item(span = { GridItemSpan(2) }) { Spacer(Modifier.height(4.dp)) }
-        items(uiState.albums) { album -> AlbumCard(album) }
+        items(uiState.albums) { album -> AlbumCard(album, onAlbumClick) }
         item(span = { GridItemSpan(2) }) { Spacer(Modifier.height(8.dp)) }
     }
 }
 
 @Composable
-private fun AlbumsHeader() {
+private fun AlbumsHeader(onLogout: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -157,14 +170,24 @@ private fun AlbumsHeader() {
             fontWeight = FontWeight.Bold
         )
         Spacer(Modifier.weight(1f))
+        
+        // Botón de Inicio (Home) con icono restaurado y semántica para pruebas
         Box(
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
-                .background(ColorOrangePrimary),
+                .background(ColorOrangePrimary)
+                .clickable { onLogout() }
+                .semantics { contentDescription = "Boton Inicio" }
+                .testTag("home_button"),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = "U", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Icon(
+                imageVector = Icons.Default.Home,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(20.dp)
+            )
         }
     }
 }
@@ -238,8 +261,8 @@ private fun SearchBar(query: String, onQueryChange: (String) -> Unit) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-private fun AlbumCard(album: Album) {
-    Column {
+private fun AlbumCard(album: Album, onAlbumClick: (Int) -> Unit) {
+    Column(modifier = Modifier.clickable { onAlbumClick(album.id) }) {
         GlideImage(
             model = album.cover,
             contentDescription = album.name,

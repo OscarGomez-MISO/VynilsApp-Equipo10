@@ -20,14 +20,29 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(navController = navController, startDestination = "welcome") {
                     composable("welcome") {
-                        WelcomeScreen(onContinue = {
-                            navController.navigate("home") {
-                                popUpTo("welcome") { inclusive = true }
+                        WelcomeScreen(
+                            onCollectorEntry = {
+                                navController.navigate("home/collector") {
+                                    popUpTo("welcome") { inclusive = true }
+                                }
+                            },
+                            onVisitorEntry = {
+                                navController.navigate("home/visitor") {
+                                    popUpTo("welcome") { inclusive = true }
+                                }
                             }
-                        })
+                        )
                     }
-                    composable("home") {
-                        MainScreen()
+                    composable("home/{userRole}") { backStackEntry ->
+                        val userRole = backStackEntry.arguments?.getString("userRole") ?: "visitor"
+                        MainScreen(
+                            isCollector = userRole == "collector",
+                            onLogout = {
+                                navController.navigate("welcome") {
+                                    popUpTo("home/{userRole}") { inclusive = true }
+                                }
+                            }
+                        )
                     }
                 }
             }

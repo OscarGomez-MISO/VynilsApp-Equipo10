@@ -1,23 +1,109 @@
-# VynilsApp-Equipo10
-Repositorio para el proyecto móvil de la materia ingeniería de software para aplicaciones móviles
+# Vinilos - Equipo 10
+
+Repositorio para el proyecto móvil de la materia Ingeniería de Software para Aplicaciones Móviles. Esta aplicación permite a los usuarios explorar álbumes, artistas y coleccionistas de vinilos, con una experiencia curada para amantes de la música.
+
+## Requisitos Previos (Local)
+
+Para ejecutar este proyecto en tu máquina local sin problemas, asegúrate de contar con lo siguiente:
+
+1.  **Android Studio**: Versión **Ladybug (2024.2.1)** o superior.
+2.  **JDK**: Versión **17** (requerida por el plugin de Gradle).
+3.  **Android SDK**:
+    *   **Compile SDK**: 35
+    *   **Target SDK**: 35
+    *   **Min SDK**: 21 (Soporta desde Android 5.0 Lollipop)
+4.  **Gradle**: Versión **9.3.1** o superior.
+5.  **Internet**: Necesario para la descarga de dependencias y el consumo de la API en Heroku (https://back-vynils-equipo10-c7f5ef54eafe.herokuapp.com/)
+
+## Especificaciones Técnicas y Versiones
+
+| Componente | Versión |
+| :--- | :--- |
+| **Android Gradle Plugin (AGP)** | 9.1.1 |
+| **Kotlin** | 2.0.21 |
+| **Jetpack Compose (BOM)** | 2024.12.01 |
+| **Retrofit** | 2.11.0 |
+| **Glide (Compose)** | 1.0.0-beta01 |
 
 ## Arquitectura del Proyecto
 
-Este proyecto sigue el patrón de arquitectura **MVVM (Model-View-ViewModel)** junto con el patrón **Repository** y un **Service Adapter** para la comunicación con el API REST.
+El proyecto sigue una arquitectura moderna de Android basada en **Clean Architecture** y el patrón **MVVM (Model-View-ViewModel)**.
 
-### Componentes:
+### Capas:
 
-1.  **Models (`models/`)**: Contiene las clases de datos (Data Classes) que representan las entidades del dominio (ej. Album, Artist, Collector).
-2.  **Service Adapter (`network/`)**: Encargado de la comunicación con el API REST alojada en Heroku. Utiliza Retrofit para realizar las peticiones HTTP.
-3.  **Repository (`repositories/`)**: Actúa como una capa de abstracción sobre las fuentes de datos. Su responsabilidad es decidir de dónde obtener los datos (Red o Caché Local) y proveerlos al ViewModel.
-4.  **ViewModel (`viewmodels/`)**: Contiene la lógica de negocio relacionada con la UI y mantiene el estado de la vista. Se comunica con el repositorio para obtener datos y los expone mediante `LiveData` o `Flow`.
-5.  **UI (`ui/`)**: Contiene las Activities y Fragments. Su única responsabilidad es observar los datos del ViewModel y pintarlos en la pantalla.
+1.  **Domain (`domain/`)**: Contiene los modelos de datos puros y lógica de negocio.
+2.  **Data (`data/`)**: Implementa el patrón **Repository** y el **Service Adapter** (Retrofit) para gestionar la fuente de verdad de los datos (Remota en Heroku).
+3.  **UI (`ui/`)**: Desarrollada íntegramente en **Jetpack Compose**.
+    *   **ViewModels**: Gestionan el estado de la UI y se comunican con el repositorio.
+    *   **Screens**: Componibles que representan las diferentes pantallas (Álbumes, Detalle, etc.).
 
-### Tecnologías Principales:
-- **Retrofit**: Para el consumo de servicios REST.
-- **Kotlin Coroutines**: Para manejo de tareas asíncronas.
-- **Lifecycle (ViewModel & LiveData)**: Para la gestión del ciclo de vida y reactividad de la UI.
-- **Material Design**: Para los componentes de interfaz de usuario.
+## Instalación y Ejecución
 
-### API Base URL:
+1.  Clona el repositorio:
+    ```bash
+    git clone https://github.com/[usuario]/VynilsApp-Equipo10.git
+    ```
+2.  Abre el proyecto en Android Studio.
+3.  Deja que Gradle sincronice las dependencias (Sync Project with Gradle Files).
+4.  Ejecuta la aplicación en un emulador o dispositivo físico (API 21+).
+
+## API Base URL
+Actualmente el proyecto consume los datos de:
 `https://back-vynils-equipo10-c7f5ef54eafe.herokuapp.com/`
+
+## Pruebas E2E (End-to-End)
+
+El proyecto cuenta con escenarios de prueba automatizados utilizando **Espresso** y **Compose Test Library**. Estas pruebas validan los flujos críticos de la aplicación.
+
+### Escenarios de Prueba:
+
+1.  **Flujo de Coleccionista**: 
+    *   **Escenario**: El usuario entra como coleccionista, visualiza la lista de álbumes, selecciona uno y ve su detalle.
+    *   **Validación**: Presencia del botón "Agregar (+)", carga de datos desde el API y navegación correcta al detalle y retorno.
+2.  **Modo Visitante**:
+    *   **Escenario**: El usuario entra como visitante para explorar.
+    *   **Validación**: El botón "Agregar (+)" debe estar oculto (modo lectura).
+3.  **Navegación de Pestañas**:
+    *   **Escenario**: El usuario navega a las pestañas de "Artistas" y "Coleccionistas".
+    *   **Validación**: Visualización del mensaje "Funcionalidad en desarrollo".
+4.  **Flujo de Salida (Logout)**:
+    *   **Escenario**: El usuario está en la pantalla principal y decide volver a la selección de rol.
+    *   **Validación**: Al pulsar el botón "Home" en la cabecera, debe regresar a la pantalla de bienvenida.
+
+### Ejecución de Pruebas:
+
+Para ejecutar las pruebas instrumentadas (E2E), asegúrate de tener un emulador o dispositivo físico conectado y desbloqueado.
+
+**Desde la terminal:**
+```bash
+./gradlew connectedAndroidTest
+```
+
+**Desde Android Studio:**
+Haz clic derecho en la carpeta `app/src/androidTest` y selecciona la opción **Run 'Tests in com.example...'**.
+
+### Resultados de las Pruebas:
+
+Una vez finalizada la ejecución desde la terminal, Gradle genera un reporte detallado en formato HTML. Puedes encontrarlo en la siguiente ruta:
+
+`app/build/reports/androidTests/connected/index.html`
+
+Para visualizarlo, abre el archivo `index.html` en cualquier navegador web. Allí verás el resumen de éxitos, fallos y el tiempo de ejecución de cada escenario.
+
+## Generación del APK
+
+Si necesitas generar o actualizar el instalador (APK) de la aplicación para pruebas en dispositivos reales, sigue estos pasos:
+
+### 1. Generar el APK
+Ejecuta el siguiente comando en la terminal desde la raíz del proyecto:
+```bash
+./gradlew assembleDebug
+```
+
+### 2. Localización del instalador
+Una vez finalizado el build, el archivo APK generado se encontrará en:
+`app/build/outputs/apk/debug/app-debug.apk`
+
+### 3. Carpeta de Distribución
+Para facilitar el acceso, hemos habilitado una carpeta llamada `/release` en la raíz del repositorio donde se encuentra la versión más reciente lista para instalar:
+`release/vynils-app-equipo10.apk`
