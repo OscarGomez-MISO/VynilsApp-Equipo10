@@ -30,6 +30,8 @@ import androidx.navigation.navArgument
 import com.example.vynilsappequipo10.ui.albums.AlbumsScreen
 import com.example.vynilsappequipo10.ui.albums.albumDetail.AlbumDetailScreen
 import com.example.vynilsappequipo10.ui.artists.ArtistsScreen
+import com.example.vynilsappequipo10.domain.ArtistType
+import com.example.vynilsappequipo10.ui.artists.artistDetail.ArtistDetailScreen
 import com.example.vynilsappequipo10.ui.collectors.CollectorsScreen
 import com.example.vynilsappequipo10.ui.theme.ColorBackground
 import com.example.vynilsappequipo10.ui.theme.ColorOrangePrimary
@@ -118,7 +120,31 @@ fun MainScreen(isCollector: Boolean, onLogout: () -> Unit) {
                 )
             }
             composable(MainTab.ARTISTS.route) {
-                ArtistsScreen()
+                ArtistsScreen(
+                    onArtistClick = { artistId, artistType ->
+                        navController.navigate("artist_detail/$artistId/${artistType.name}")
+                    }
+                )
+            }
+            composable(
+                route = "artist_detail/{artistId}/{artistType}",
+                arguments = listOf(
+                    navArgument("artistId") { type = NavType.IntType },
+                    navArgument("artistType") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val artistId = backStackEntry.arguments?.getInt("artistId") ?: return@composable
+                val artistType = ArtistType.valueOf(
+                    backStackEntry.arguments?.getString("artistType") ?: ArtistType.MUSICIAN.name
+                )
+                ArtistDetailScreen(
+                    artistId = artistId,
+                    artistType = artistType,
+                    onBackClick = { navController.popBackStack() },
+                    onAlbumClick = { albumId ->
+                        navController.navigate("album_detail/$albumId")
+                    }
+                )
             }
             composable(MainTab.COLLECTORS.route) {
                 CollectorsScreen()

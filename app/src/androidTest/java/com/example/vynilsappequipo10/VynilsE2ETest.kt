@@ -2,6 +2,7 @@ package com.example.vynilsappequipo10
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.hasText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Rule
 import org.junit.Test
@@ -15,38 +16,39 @@ class VynilsE2ETest {
 
     @Test
     fun testCollectorFlow_NavigatesToListAndDetail() {
-        // 1. Verificar pantalla de bienvenida y entrar como coleccionista
         composeTestRule.onNodeWithText("ENTRAR COMO COLECCIONISTA  →").performClick()
 
-        // 2. Verificar que estamos en la lista de álbumes
         composeTestRule.waitUntil(10000) {
             composeTestRule.onAllNodesWithText("TOTAL DE LPS").fetchSemanticsNodes().isNotEmpty()
         }
-        
-        // 3. Verificar que el botón flotante (+) existe para el coleccionista
+
         composeTestRule.onNodeWithContentDescription("Agregar").assertIsDisplayed()
 
-        // 4. Click en un álbum (basado en el texto 'Salsa' que es común en el API para el primer álbum)
         composeTestRule.onAllNodesWithText("Salsa").onFirst().performClick()
 
-        // 5. Verificar que estamos en el detalle
+        composeTestRule.waitUntil(20000) {
+            composeTestRule.onAllNodesWithText("Descripción").fetchSemanticsNodes().isNotEmpty()
+        }
+
         composeTestRule.onNodeWithText("Detalle del Álbum").assertIsDisplayed()
         composeTestRule.onNodeWithText("Descripción").assertIsDisplayed()
-        
-        // 6. Volver atrás
+
         composeTestRule.onNodeWithContentDescription("Regresar").performClick()
         composeTestRule.onNodeWithText("Vinilos").assertIsDisplayed()
     }
 
     @Test
-    fun testNavigationTabs_ShowsDevelopmentMessage() {
+    fun testNavigationTabs_ShowsArtistsListAndDevelopmentMessage() {
         composeTestRule.onNodeWithText("EXPLORAR COMO VISITANTE").performClick()
 
-        // Navegar a Artistas
         composeTestRule.onNodeWithText("ARTISTAS").performClick()
-        composeTestRule.onNodeWithText("Funcionalidad en desarrollo").assertIsDisplayed()
 
-        // Navegar a Coleccionistas
+        composeTestRule.waitUntil(10000) {
+            composeTestRule.onAllNodesWithText("BIBLIOTECA CURADA").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        composeTestRule.onNodeWithText("BIBLIOTECA CURADA").assertIsDisplayed()
+
         composeTestRule.onNodeWithText("COLECCIONISTAS").performClick()
         composeTestRule.onNodeWithText("Funcionalidad en desarrollo").assertIsDisplayed()
     }
@@ -55,15 +57,12 @@ class VynilsE2ETest {
     fun testLogoutFlow_ReturnsToWelcome() {
         composeTestRule.onNodeWithText("ENTRAR COMO COLECCIONISTA  →").performClick()
 
-        // Esperar a que el botón de Inicio aparezca (usando la descripción semántica)
         composeTestRule.waitUntil(10000) {
             composeTestRule.onAllNodesWithContentDescription("Boton Inicio").fetchSemanticsNodes().isNotEmpty()
         }
 
-        // Click en el botón de Inicio
         composeTestRule.onNodeWithContentDescription("Boton Inicio").performClick()
 
-        // Verificar que estamos de nuevo en la bienvenida
         composeTestRule.onNodeWithText("Tu bóveda sonora te espera").assertIsDisplayed()
     }
 
@@ -71,7 +70,68 @@ class VynilsE2ETest {
     fun testVisitorFlow_DoesNotShowAddButton() {
         composeTestRule.onNodeWithText("EXPLORAR COMO VISITANTE").performClick()
 
-        // Verificar que el botón (+) NO existe para el visitante
         composeTestRule.onNodeWithContentDescription("Agregar").assertDoesNotExist()
+    }
+
+    // HU04: Visualizar detalle de artista
+
+    @Test
+    fun testArtistDetail_ShowsMusicianInformation() {
+        composeTestRule.onNodeWithText("EXPLORAR COMO VISITANTE").performClick()
+        composeTestRule.onNodeWithText("ARTISTAS").performClick()
+
+        composeTestRule.waitUntil(20000) {
+            composeTestRule.onAllNodesWithText("Rubén Blades Bellido de Luna").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        composeTestRule.onNodeWithText("Rubén Blades Bellido de Luna").performClick()
+
+        composeTestRule.onNodeWithText("Rubén Blades Bellido de Luna").assertIsDisplayed()
+        composeTestRule.onNodeWithText("ARTISTA LEGENDARIO").assertIsDisplayed()
+        composeTestRule.onNodeWithText("FECHA DE NACIMIENTO").assertIsDisplayed()
+        composeTestRule.onNodeWithText("1948-07-16").assertIsDisplayed()
+    }
+
+    @Test
+    fun testArtistDetail_ShowsAssociatedAlbums() {
+        composeTestRule.onNodeWithText("EXPLORAR COMO VISITANTE").performClick()
+        composeTestRule.onNodeWithText("ARTISTAS").performClick()
+
+        composeTestRule.waitUntil(20000) {
+            composeTestRule.onAllNodesWithText("Rubén Blades Bellido de Luna").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        composeTestRule.onNodeWithText("Rubén Blades Bellido de Luna").performClick()
+
+        composeTestRule.waitUntil(20000) {
+            composeTestRule.onAllNodesWithText("FECHA DE NACIMIENTO").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        composeTestRule.onNodeWithText("Buscando América").assertExists()
+        composeTestRule.onNodeWithText("Poeta del pueblo").assertExists()
+    }
+
+    @Test
+    fun testArtistDetail_BackNavigationReturnsToList() {
+        composeTestRule.onNodeWithText("EXPLORAR COMO VISITANTE").performClick()
+        composeTestRule.onNodeWithText("ARTISTAS").performClick()
+
+        composeTestRule.waitUntil(20000) {
+            composeTestRule.onAllNodesWithText("Rubén Blades Bellido de Luna").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        composeTestRule.onNodeWithText("Rubén Blades Bellido de Luna").performClick()
+
+        composeTestRule.waitUntil(20000) {
+            composeTestRule.onAllNodesWithText("FECHA DE NACIMIENTO").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        composeTestRule.onNodeWithContentDescription("Regresar").performClick()
+
+        composeTestRule.waitUntil(10000) {
+            composeTestRule.onAllNodesWithText("BIBLIOTECA CURADA").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        composeTestRule.onNodeWithText("BIBLIOTECA CURADA").assertIsDisplayed()
     }
 }
