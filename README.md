@@ -105,5 +105,5 @@ Una vez finalizado el build, el archivo APK generado se encontrará en:
 `app/build/outputs/apk/debug/app-debug.apk`
 
 ### 3. Carpeta de Distribución
-Para facilitar el acceso, hemos habilitado una carpeta llamada `/release` en la raíz del repositorio donde se encuentra la versión más reciente lista para instalar:
+Para facilitar el acceso, hemos habilitado la carpeta llamada `/release` en la raíz del repositorio donde se encuentra la versión más reciente lista para instalar:
 `release/vynils-app-equipo10.apk`
