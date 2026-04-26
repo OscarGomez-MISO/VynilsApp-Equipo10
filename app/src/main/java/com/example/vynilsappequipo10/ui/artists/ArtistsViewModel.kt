@@ -17,8 +17,9 @@ data class ArtistsUiState(
     val error: String? = null
 )
 
-class ArtistsViewModel : ViewModel() {
-    private val repository = ArtistRepository()
+class ArtistsViewModel(
+    private val repository: ArtistRepository = ArtistRepository()
+) : ViewModel() {
     private val allArtists = mutableListOf<Artist>()
 
     private val _uiState = MutableStateFlow(ArtistsUiState(isLoading = true))

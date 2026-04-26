@@ -17,8 +17,9 @@ data class AlbumsUiState(
     val error: String? = null
 )
 
-class AlbumsViewModel : ViewModel() {
-    private val repository = AlbumRepository()
+class AlbumsViewModel(
+    private val repository: AlbumRepository = AlbumRepository()
+) : ViewModel() {
     private val allAlbums = mutableListOf<Album>()
 
     private val _uiState = MutableStateFlow(AlbumsUiState(isLoading = true))
