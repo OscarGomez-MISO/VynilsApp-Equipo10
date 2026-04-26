@@ -1,39 +1,69 @@
-gitignore
-# IDE / Android Studio
+# ── Android Studio / IntelliJ IDEA ───────────────────────────────────────────
 .idea/
 *.iml
 *.ipr
 *.iws
-.DS_Store
+/assetWizardSettings.xml
 /captures
 .externalNativeBuild
 .cxx
-/assetWizardSettings.xml
 
-# Gradle / Build
+# ── VS Code ───────────────────────────────────────────────────────────────────
+.vscode/
+
+# ── Gradle / Build outputs ───────────────────────────────────────────────────
 .gradle/
 build/
-app/build/
+**/build/
 .kotlin/
+out/
 
-# Firma y Secretos (CRÍTICO)
+# ── Secrets & local config ───────────────────────────────────────────────────
 local.properties
 *.keystore
 *.jks
 *.google_play_keys
+google-services.json
+*.p12
+*.pem
 
-# Kotlin / Java
+# ── JVM artifacts ────────────────────────────────────────────────────────────
 *.class
-*.log
 *.jar
 *.war
-*.zip
-*.tar.gz
-*.rar
+*.ear
+*.aar
 hs_err_pid*
 replay_pid*
 
-# Mobile Tools for Java (J2ME)
+# ── Logs & temp files ────────────────────────────────────────────────────────
+*.log
+*.tmp
+*.swp
+*.bak
+*.orig
 .mtj.tmp/
 
+# ── macOS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# ── Windows ──────────────────────────────────────────────────────────────────
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ── Obsidian ─────────────────────────────────────────────────────────────────
+.obsidian/
+
+# ── Claude Code ──────────────────────────────────────────────────────────────
+CLAUDE.md
+docs/
+API_REFERENCE.md
+
+# ── Keep Gradle wrapper JAR ──────────────────────────────────────────────────
 !gradle/wrapper/gradle-wrapper.jar
