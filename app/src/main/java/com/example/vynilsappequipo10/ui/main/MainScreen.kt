@@ -1,5 +1,6 @@
 package com.example.vynilsappequipo10.ui.main
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
@@ -15,14 +16,19 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.vynilsappequipo10.ui.albums.AlbumsScreen
+import com.example.vynilsappequipo10.ui.albums.albumDetail.AlbumDetailScreen
 import com.example.vynilsappequipo10.ui.artists.ArtistsScreen
 import com.example.vynilsappequipo10.ui.collectors.CollectorsScreen
 import com.example.vynilsappequipo10.ui.theme.ColorBackground
@@ -30,33 +36,46 @@ import com.example.vynilsappequipo10.ui.theme.ColorOrangePrimary
 import com.example.vynilsappequipo10.ui.theme.ColorSurface
 import com.example.vynilsappequipo10.ui.theme.ColorTextHint
 
-private enum class MainTab(val label: String, val icon: ImageVector) {
-    ALBUMS("ÁLBUMES", Icons.AutoMirrored.Filled.List),
-    ARTISTS("ARTISTAS", Icons.Default.Person),
-    COLLECTORS("COLECCIONISTAS", Icons.Default.AccountBox)
+private enum class MainTab(val route: String, val label: String, val icon: ImageVector) {
+    ALBUMS("albums_list", "ÁLBUMES", Icons.AutoMirrored.Filled.List),
+    ARTISTS("artists_list", "ARTISTAS", Icons.Default.Person),
+    COLLECTORS("collectors_list", "COLECCIONISTAS", Icons.Default.AccountBox)
 }
 
 @Composable
-fun MainScreen() {
-    var selectedTab by remember { mutableStateOf(MainTab.ALBUMS) }
+fun MainScreen(isCollector: Boolean, onLogout: () -> Unit) {
+    val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    val context = LocalContext.current
 
     Scaffold(
         containerColor = ColorBackground,
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {},
-                containerColor = ColorOrangePrimary,
-                contentColor = Color.White
-            ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Agregar")
+            if (isCollector && (currentRoute == MainTab.ALBUMS.route || currentRoute == MainTab.ARTISTS.route || currentRoute == MainTab.COLLECTORS.route)) {
+                FloatingActionButton(
+                    onClick = {
+                        Toast.makeText(context, "Funcionalidad en desarrollo", Toast.LENGTH_SHORT).show()
+                    },
+                    containerColor = ColorOrangePrimary,
+                    contentColor = Color.White
+                ) {
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "Agregar")
+                }
             }
         },
         bottomBar = {
             NavigationBar(containerColor = ColorSurface) {
                 MainTab.entries.forEach { tab ->
                     NavigationBarItem(
-                        selected = selectedTab == tab,
-                        onClick = { selectedTab = tab },
+                        selected = currentRoute == tab.route,
+                        onClick = {
+                            navController.navigate(tab.route) {
+                                popUpTo(navController.graph.startDestinationId) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
                         icon = {
                             Icon(imageVector = tab.icon, contentDescription = tab.label)
                         },
@@ -75,10 +94,35 @@ fun MainScreen() {
             }
         }
     ) { innerPadding ->
-        when (selectedTab) {
-            MainTab.ALBUMS     -> AlbumsScreen(modifier = Modifier.padding(innerPadding))
-            MainTab.ARTISTS    -> ArtistsScreen(modifier = Modifier.padding(innerPadding))
-            MainTab.COLLECTORS -> CollectorsScreen(modifier = Modifier.padding(innerPadding))
+        NavHost(
+            navController = navController,
+            startDestination = MainTab.ALBUMS.route,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable(MainTab.ALBUMS.route) {
+                AlbumsScreen(
+                    onAlbumClick = { albumId ->
+                        navController.navigate("album_detail/$albumId")
+                    },
+                    onLogout = onLogout
+                )
+            }
+            composable(
+                route = "album_detail/{albumId}",
+                arguments = listOf(navArgument("albumId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val albumId = backStackEntry.arguments?.getInt("albumId") ?: return@composable
+                AlbumDetailScreen(
+                    albumId = albumId,
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+            composable(MainTab.ARTISTS.route) {
+                ArtistsScreen()
+            }
+            composable(MainTab.COLLECTORS.route) {
+                CollectorsScreen()
+            }
         }
     }
 }

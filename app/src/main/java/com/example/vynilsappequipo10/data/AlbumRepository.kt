@@ -8,4 +8,6 @@ class AlbumRepository(
     private val service: AlbumService = RetrofitClient.albumService
 ) {
     suspend fun getAlbums(): List<Album> = service.getAlbums()
+
+    suspend fun getAlbumById(id: Int): Album = service.getAlbumById(id)
 }

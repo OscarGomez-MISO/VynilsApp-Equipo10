@@ -12,16 +12,12 @@ val localProps = Properties().apply {
 
 android {
     namespace = "com.example.vynilsappequipo10"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.vynilsappequipo10"
-        minSdk = 24
-        targetSdk = 36
+        minSdk = 21
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -29,7 +25,7 @@ android {
 
         buildConfigField(
             "String", "BASE_URL",
-            "\"${localProps.getProperty("BASE_URL", "http://localhost:3000/")}\""
+            "\"${localProps.getProperty("BASE_URL", "https://back-vynils-equipo10-c7f5ef54eafe.herokuapp.com/")}\""
         )
     }
 
@@ -80,4 +76,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
