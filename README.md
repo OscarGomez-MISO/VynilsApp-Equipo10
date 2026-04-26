@@ -35,7 +35,7 @@ El proyecto sigue una arquitectura moderna de Android basada en **Clean Architec
 2.  **Data (`data/`)**: Implementa el patrón **Repository** y el **Service Adapter** (Retrofit) para gestionar la fuente de verdad de los datos (Remota en Heroku).
 3.  **UI (`ui/`)**: Desarrollada íntegramente en **Jetpack Compose**.
     *   **ViewModels**: Gestionan el estado de la UI y se comunican con el repositorio.
-    *   **Screens**: Componibles que representan las diferentes pantallas (Álbumes, Detalle, etc.).
+    *   **Screens**: Componibles que representan las diferentes pantallas (Álbumes, Detalle de Álbum, Artistas, Detalle de Artista/Banda, Coleccionistas).
 
 ## Instalación y Ejecución
 
@@ -64,9 +64,12 @@ El proyecto cuenta con escenarios de prueba automatizados utilizando **Espresso*
     *   **Escenario**: El usuario entra como visitante para explorar.
     *   **Validación**: El botón "Agregar (+)" debe estar oculto (modo lectura).
 3.  **Navegación de Pestañas**:
-    *   **Escenario**: El usuario navega a las pestañas de "Artistas" y "Coleccionistas".
-    *   **Validación**: Visualización del mensaje "Funcionalidad en desarrollo".
-4.  **Flujo de Salida (Logout)**:
+    *   **Escenario**: El usuario navega a la pestaña de "Artistas" y "Coleccionistas".
+    *   **Validación**: En Artistas se muestra la lista real de artistas con el encabezado "BIBLIOTECA CURADA". En Coleccionistas se muestra el mensaje "Funcionalidad en desarrollo".
+4.  **Detalle de Artista (HU04)**:
+    *   **Escenario**: El usuario selecciona un artista del listado y visualiza su detalle.
+    *   **Validación**: Se muestra nombre, fecha de nacimiento y descripción del artista, así como la lista de álbumes asociados. Al tocar un álbum navega al detalle del álbum. El botón de regreso vuelve al listado de artistas.
+5.  **Flujo de Salida (Logout)**:
     *   **Escenario**: El usuario está en la pantalla principal y decide volver a la selección de rol.
     *   **Validación**: Al pulsar el botón "Home" en la cabecera, debe regresar a la pantalla de bienvenida.
 
