@@ -220,7 +220,12 @@ private fun CollectorRow(collector: Collector) {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = collector.name.firstOrNull()?.uppercaseChar()?.toString() ?: "?",
+                text = collector.name.split(" ")
+                    .filter { it.isNotBlank() }
+                    .take(2)
+                    .mapNotNull { it.firstOrNull()?.uppercaseChar() }
+                    .joinToString("")
+                    .ifEmpty { "?" },
                 color = Color.White,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
@@ -241,6 +246,23 @@ private fun CollectorRow(collector: Collector) {
                 color = ColorTextHint,
                 fontSize = 12.sp
             )
+        }
+
+        if (collector.collectorAlbums.isNotEmpty()) {
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(ColorOrangePrimary.copy(alpha = 0.15f))
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            ) {
+                Text(
+                    text = "${collector.collectorAlbums.size} ${if (collector.collectorAlbums.size == 1) "ÁLBUM" else "ÁLBUMES"}",
+                    color = ColorOrangePrimary,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 0.5.sp
+                )
+            }
         }
     }
 }

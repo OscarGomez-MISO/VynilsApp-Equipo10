@@ -65,11 +65,15 @@ El proyecto cuenta con escenarios de prueba automatizados utilizando **Espresso*
     *   **Validación**: El botón "Agregar (+)" debe estar oculto (modo lectura).
 3.  **Navegación de Pestañas**:
     *   **Escenario**: El usuario navega a la pestaña de "Artistas" y "Coleccionistas".
-    *   **Validación**: En Artistas se muestra la lista real de artistas con el encabezado "BIBLIOTECA CURADA". En Coleccionistas se muestra el mensaje "Funcionalidad en desarrollo".
+    *   **Validación**: En Artistas se muestra la lista real de artistas con el encabezado "BIBLIOTECA CURADA". En Coleccionistas se muestra la lista real con el encabezado "SOCIEDAD DE BUSCADORES DE JOYAS".
 4.  **Detalle de Artista (HU04)**:
     *   **Escenario**: El usuario selecciona un artista del listado y visualiza su detalle.
     *   **Validación**: Se muestra nombre, fecha de nacimiento y descripción del artista, así como la lista de álbumes asociados. Al tocar un álbum navega al detalle del álbum. El botón de regreso vuelve al listado de artistas.
-5.  **Flujo de Salida (Logout)**:
+5.  **Listado de Coleccionistas (HU05)**:
+    *   **Escenario**: El usuario navega a la pestaña "Coleccionistas".
+    *   **Validación**: Se muestra el encabezado "SOCIEDAD DE BUSCADORES DE JOYAS", la lista de coleccionistas con nombre y cantidad de álbumes, y una barra de búsqueda funcional. Si no hay coleccionistas, se muestra un mensaje informativo.
+    *   **Archivos**: `CollectorsListTest.kt` (6 tests HU05)
+6.  **Flujo de Salida (Logout)**:
     *   **Escenario**: El usuario está en la pantalla principal y decide volver a la selección de rol.
     *   **Validación**: Al pulsar el botón "Home" en la cabecera, debe regresar a la pantalla de bienvenida.
 
