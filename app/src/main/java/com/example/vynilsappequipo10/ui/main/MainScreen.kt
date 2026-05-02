@@ -116,6 +116,7 @@ fun MainScreen(isCollector: Boolean, onLogout: () -> Unit) {
                 val albumId = backStackEntry.arguments?.getInt("albumId") ?: return@composable
                 AlbumDetailScreen(
                     albumId = albumId,
+                    isCollector = isCollector,
                     onBackClick = { navController.popBackStack() }
                 )
             }

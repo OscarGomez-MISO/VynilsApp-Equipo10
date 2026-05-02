@@ -36,7 +36,7 @@ class ArtistDetailTest {
         navigateToArtist("Queen")
         
         composeTestRule.waitUntil(30000) {
-            composeTestRule.onAllNodesWithText("FECHA DE", substring = true)
+            composeTestRule.onAllNodes(hasText("FECHA DE", substring = true))
                 .fetchSemanticsNodes().isNotEmpty()
         }
         
@@ -48,7 +48,7 @@ class ArtistDetailTest {
         navigateToArtist("Queen")
         
         composeTestRule.waitUntil(30000) {
-            composeTestRule.onAllNodesWithText("FECHA DE", substring = true)
+            composeTestRule.onAllNodes(hasText("FECHA DE", substring = true))
                 .fetchSemanticsNodes().isNotEmpty()
         }
         
@@ -64,7 +64,7 @@ class ArtistDetailTest {
         navigateToArtist("Queen")
         
         composeTestRule.waitUntil(30000) {
-            composeTestRule.onAllNodesWithText("FECHA DE", substring = true)
+            composeTestRule.onAllNodes(hasText("FECHA DE", substring = true))
                 .fetchSemanticsNodes().isNotEmpty()
         }
         
@@ -80,7 +80,7 @@ class ArtistDetailTest {
         navigateToArtist("Queen")
         
         composeTestRule.waitUntil(30000) {
-            composeTestRule.onAllNodesWithText("FECHA DE", substring = true)
+            composeTestRule.onAllNodes(hasText("FECHA DE", substring = true))
                 .fetchSemanticsNodes().isNotEmpty()
         }
         
@@ -93,7 +93,7 @@ class ArtistDetailTest {
         navigateToArtist("Queen")
         
         composeTestRule.waitUntil(30000) {
-            composeTestRule.onAllNodesWithText("FECHA DE", substring = true)
+            composeTestRule.onAllNodes(hasText("FECHA DE", substring = true))
                 .fetchSemanticsNodes().isNotEmpty()
         }
         
@@ -109,7 +109,7 @@ class ArtistDetailTest {
         navigateToArtist("Queen")
         
         composeTestRule.waitUntil(30000) {
-            composeTestRule.onAllNodesWithText("FECHA DE", substring = true)
+            composeTestRule.onAllNodes(hasText("FECHA DE", substring = true))
                 .fetchSemanticsNodes().isNotEmpty()
         }
         
@@ -127,7 +127,7 @@ class ArtistDetailTest {
         navigateToArtist("Queen")
         
         composeTestRule.waitUntil(30000) {
-            composeTestRule.onAllNodesWithText("FECHA DE", substring = true)
+            composeTestRule.onAllNodes(hasText("FECHA DE", substring = true))
                 .fetchSemanticsNodes().isNotEmpty()
         }
         
@@ -143,7 +143,7 @@ class ArtistDetailTest {
         navigateToArtist("Queen")
         
         composeTestRule.waitUntil(30000) {
-            composeTestRule.onAllNodesWithText("FECHA DE", substring = true)
+            composeTestRule.onAllNodes(hasText("FECHA DE", substring = true))
                 .fetchSemanticsNodes().isNotEmpty()
         }
         
