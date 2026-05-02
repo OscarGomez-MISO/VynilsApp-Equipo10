@@ -73,7 +73,11 @@ class VynilsE2ETest {
         composeTestRule.onNodeWithText("BIBLIOTECA CURADA").assertIsDisplayed()
 
         composeTestRule.onNodeWithText("COLECCIONISTAS").performClick()
-        composeTestRule.onNodeWithText("Funcionalidad en desarrollo").assertIsDisplayed()
+        composeTestRule.waitUntil(15000) {
+            composeTestRule.onAllNodesWithText("SOCIEDAD DE BUSCADORES DE JOYAS")
+                .fetchSemanticsNodes().isNotEmpty()
+        }
+        composeTestRule.onNodeWithText("SOCIEDAD DE BUSCADORES DE JOYAS").assertIsDisplayed()
     }
 
     @Test
