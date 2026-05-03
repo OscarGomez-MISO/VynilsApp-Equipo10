@@ -1,10 +1,17 @@
 package com.example.vynilsappequipo10.domain
 
+data class CollectorAlbum(
+    val id: Int,
+    val price: Double,
+    val status: String
+)
+
 data class Collector(
     val id: Int? = null,
     val name: String,
     val telephone: String,
-    val email: String
+    val email: String,
+    val collectorAlbums: List<CollectorAlbum> = emptyList()
 )
 
 data class CommentRequest(
