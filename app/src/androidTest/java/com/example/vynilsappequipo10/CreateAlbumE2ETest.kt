@@ -22,6 +22,9 @@ class CreateAlbumE2ETest {
         composeTestRule.onNodeWithText("COLECCIONISTA", substring = true).performClick()
 
         // 2. Click en el FAB para crear álbum
+        composeTestRule.waitUntil(20000) {
+            composeTestRule.onAllNodesWithTag("fab_create_album").fetchSemanticsNodes().isNotEmpty()
+        }
         composeTestRule.onNodeWithTag("fab_create_album").performClick()
 
         // 3. Llenar el formulario
@@ -49,7 +52,7 @@ class CreateAlbumE2ETest {
         composeTestRule.onNodeWithTag("record_label_option_EMI").performClick()
 
         // 4. Click en el botón Crear
-        composeTestRule.onNodeWithTag("create_album_button").performClick()
+        composeTestRule.onNodeWithTag("create_album_button").performScrollTo().performClick()
 
         // 5. Verificar mensaje de éxito
         composeTestRule.waitUntil(10000) {
@@ -64,12 +67,18 @@ class CreateAlbumE2ETest {
         composeTestRule.onNodeWithText("COLECCIONISTA", substring = true).performClick()
 
         // 2. Click en el FAB para crear álbum
+        composeTestRule.waitUntil(20000) {
+            composeTestRule.onAllNodesWithTag("fab_create_album").fetchSemanticsNodes().isNotEmpty()
+        }
         composeTestRule.onNodeWithTag("fab_create_album").performClick()
 
         // 3. Click en el botón Crear sin llenar nada
-        composeTestRule.onNodeWithTag("create_album_button").performClick()
+        composeTestRule.onNodeWithTag("create_album_button").performScrollTo().performClick()
 
         // 4. Verificar mensaje de error
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onAllNodesWithText("Todos los campos son obligatorios").fetchSemanticsNodes().isNotEmpty()
+        }
         composeTestRule.onNodeWithText("Todos los campos son obligatorios").assertIsDisplayed()
     }
 

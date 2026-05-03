@@ -139,7 +139,11 @@ fun CommentSheet(albumId: Int, onDismiss: () -> Unit) {
     val userSession = remember { UserSession(context.applicationContext) }
     val commentViewModel: CommentViewModel = viewModel(factory = object : androidx.lifecycle.ViewModelProvider.Factory {
         override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
-            return CommentViewModel(userSession = userSession) as T
+            if (modelClass.isAssignableFrom(CommentViewModel::class.java)) {
+                @Suppress("UNCHECKED_CAST")
+                return CommentViewModel(userSession = userSession) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
         }
     })
     
@@ -213,7 +217,7 @@ fun CommentSheet(albumId: Int, onDismiss: () -> Unit) {
                     }
                 }
                 is CommentUiState.Error -> {
-                    Column {
+                    Column(modifier = Modifier.testTag("comment_error_message")) {
                         Text(currentState.message, color = Color.Red)
                         Button(onClick = { commentViewModel.resetState() }) {
                             Text("Reintentar")
