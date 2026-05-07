@@ -27,17 +27,10 @@ jobs:
       - name: Run tests, lint and generate coverage report
         run: ./gradlew :app:lintDebug :app:jacocoTestReport --no-daemon
 
-      - name: Debug - List Generated Reports
-        run: |
-          echo "Listing all XML reports in app/build/reports:"
-          find app/build/reports -name "*.xml"
-          echo "Listing all .exec files in app/build/jacoco:"
-          find app/build/jacoco -name "*.exec" || true
-
       - name: Run SonarCloud analysis
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
           SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
-        run: ./gradlew sonar --no-daemon -Dsonar.androidLint.reportPaths=app/build/reports/lint-results-debug.xml -Dsonar.coverage.jacoco.xmlReportPaths=app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
+        run: ./gradlew sonar --no-daemon

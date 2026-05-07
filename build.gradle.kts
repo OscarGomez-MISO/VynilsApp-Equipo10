@@ -10,13 +10,17 @@ sonar {
         property("sonar.projectKey", System.getenv("SONAR_PROJECT_KEY") ?: "OscarGomez-MISO_VynilsApp-Equipo10")
         property("sonar.organization", System.getenv("SONAR_ORGANIZATION") ?: "oscargomez-miso")
         property("sonar.host.url", "https://sonarcloud.io")
-        
-        // Configuración para el módulo app
-        property("sonar.sources", "app/src/main/java")
-        property("sonar.tests", "app/src/test/java")
-        property("sonar.java.binaries", "app/build/tmp/kotlin-classes/debug")
-        property("sonar.kotlin.binaries", "app/build/tmp/kotlin-classes/debug")
-        property("sonar.coverage.jacoco.xmlReportPaths", "app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
-        property("sonar.androidLint.reportPaths", "app/build/reports/lint-results-debug.xml")
+    }
+}
+
+// Configuración específica para el módulo :app
+project(":app") {
+    sonar {
+        properties {
+            // El plugin de Sonar ya detecta sources/tests automáticamente en submódulos Android.
+            // Solo especificamos lo que le cuesta encontrar:
+            property("sonar.coverage.jacoco.xmlReportPaths", "${project.layout.buildDirectory.get()}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+            property("sonar.androidLint.reportPaths", "${project.layout.buildDirectory.get()}/reports/lint-results-debug.xml")
+        }
     }
 }
