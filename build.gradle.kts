@@ -17,9 +17,18 @@ project(":app") {
     sonar {
         properties {
             val buildDir = project.layout.buildDirectory.get().asFile
+            
+            // Forzamos el directorio base del módulo para el mapeo de rutas
+            property("sonar.projectBaseDir", project.projectDir.absolutePath)
+            
+            // Explicitamos fuentes para evitar el 0%
+            property("sonar.sources", "src/main/java")
+            
+            // Binarios necesarios para JaCoCo
             property("sonar.java.binaries", "$buildDir/tmp/kotlin-classes/debug")
             property("sonar.kotlin.binaries", "$buildDir/tmp/kotlin-classes/debug")
 
+            // Reportes
             property("sonar.coverage.jacoco.xmlReportPaths", "$buildDir/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
             property("sonar.androidLint.reportPaths", "$buildDir/reports/lint-results-debug.xml")
         }
