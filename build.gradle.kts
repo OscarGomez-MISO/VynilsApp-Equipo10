@@ -25,6 +25,7 @@ project(":app") {
             // Rutas de reportes (Rutas absolutas para evitar confusiones)
             property("sonar.coverage.jacoco.xmlReportPaths", "$buildDir/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
             property("sonar.androidLint.reportPaths", "$buildDir/reports/lint-results-debug.xml")
+            property("sonar.junit.reportPaths", "$buildDir/test-results/testDebugUnitTest")
         }
     }
 }
