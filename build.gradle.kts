@@ -2,7 +2,7 @@
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.compose) apply false
-    id("org.sonarqube") version "5.1.0.4882"
+    alias(libs.plugins.sonarqube)
 }
 
 sonar {
@@ -11,5 +11,6 @@ sonar {
         property("sonar.organization", System.getenv("SONAR_ORGANIZATION") ?: "oscargomez-miso")
         property("sonar.host.url", "https://sonarcloud.io")
         property("sonar.coverage.jacoco.xmlReportPaths", "${project.rootDir}/app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+        property("sonar.kotlin.binaries", "${project.rootDir}/app/build/tmp/kotlin-classes/debug")
     }
 }
