@@ -118,7 +118,7 @@ El análisis se realiza automáticamente mediante GitHub Actions (`sonar.yml`) b
 1.  Cada vez que se realiza un **Push** a la rama `main`.
 2.  Al abrir o actualizar un **Pull Request** hacia `main`.
 
-El pipeline se encarga de:
+El pipeline se encarga de: 
 1.  Ejecutar las pruebas unitarias.
 2.  Generar el reporte de cobertura con JaCoCo.
 3.  Subir los resultados a SonarCloud usando las credenciales seguras (`SONAR_TOKEN`, `SONAR_PROJECT_KEY`, `SONAR_ORGANIZATION`) configuradas en el repositorio.
