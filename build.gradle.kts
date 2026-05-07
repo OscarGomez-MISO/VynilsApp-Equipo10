@@ -13,14 +13,15 @@ sonar {
     }
 }
 
-// Configuración específica para el módulo :app
 project(":app") {
     sonar {
         properties {
-            // El plugin de Sonar ya detecta sources/tests automáticamente en submódulos Android.
-            // Solo especificamos lo que le cuesta encontrar:
-            property("sonar.coverage.jacoco.xmlReportPaths", "${project.layout.buildDirectory.get()}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
-            property("sonar.androidLint.reportPaths", "${project.layout.buildDirectory.get()}/reports/lint-results-debug.xml")
+            val buildDir = project.layout.buildDirectory.get().asFile
+            property("sonar.java.binaries", "$buildDir/tmp/kotlin-classes/debug")
+            property("sonar.kotlin.binaries", "$buildDir/tmp/kotlin-classes/debug")
+
+            property("sonar.coverage.jacoco.xmlReportPaths", "$buildDir/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+            property("sonar.androidLint.reportPaths", "$buildDir/reports/lint-results-debug.xml")
         }
     }
 }
