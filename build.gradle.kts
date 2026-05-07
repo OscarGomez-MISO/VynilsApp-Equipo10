@@ -16,11 +16,13 @@ sonar {
 project(":app") {
     sonar {
         properties {
+            val buildDir = project.layout.buildDirectory.get().asFile
             property("sonar.sources", "src/main/java")
             property("sonar.tests", "src/test/java")
-            property("sonar.java.binaries", "build/tmp/kotlin-classes/debug")
-            property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
-            property("sonar.androidLint.reportPaths", "build/reports/lint-results-debug.xml")
+            property("sonar.java.binaries", "$buildDir/tmp/kotlin-classes/debug")
+            property("sonar.kotlin.binaries", "$buildDir/tmp/kotlin-classes/debug")
+            property("sonar.coverage.jacoco.xmlReportPaths", "$buildDir/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+            property("sonar.androidLint.reportPaths", "$buildDir/reports/lint-results-debug.xml")
         }
     }
 }
