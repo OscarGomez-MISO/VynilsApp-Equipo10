@@ -10,6 +10,9 @@ sonar {
         property("sonar.projectKey", System.getenv("SONAR_PROJECT_KEY") ?: "OscarGomez-MISO_VynilsApp-Equipo10")
         property("sonar.organization", System.getenv("SONAR_ORGANIZATION") ?: "oscargomez-miso")
         property("sonar.host.url", "https://sonarcloud.io")
+        
+        // Indicamos que el proyecto raíz no tiene fuentes para evitar duplicidad
+        property("sonar.sources", "")
     }
 }
 
@@ -18,17 +21,14 @@ project(":app") {
         properties {
             val buildDir = project.layout.buildDirectory.get().asFile
             
-            // Forzamos el directorio base del módulo para el mapeo de rutas
-            property("sonar.projectBaseDir", project.projectDir.absolutePath)
-            
-            // Explicitamos fuentes para evitar el 0%
+            // Definimos las fuentes solo para este módulo
             property("sonar.sources", "src/main/java")
             
-            // Binarios necesarios para JaCoCo
+            // Binarios para que JaCoCo funcione (crucial para el 0%)
             property("sonar.java.binaries", "$buildDir/tmp/kotlin-classes/debug")
             property("sonar.kotlin.binaries", "$buildDir/tmp/kotlin-classes/debug")
 
-            // Reportes
+            // Rutas de reportes relativas al módulo
             property("sonar.coverage.jacoco.xmlReportPaths", "$buildDir/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
             property("sonar.androidLint.reportPaths", "$buildDir/reports/lint-results-debug.xml")
         }
