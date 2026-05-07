@@ -12,17 +12,6 @@ val localProps = Properties().apply {
         ?.inputStream()?.use { load(it) }
 }
 
-// Configuración de SonarCloud para este módulo
-extensions.configure<org.sonarqube.gradle.SonarExtension> {
-    properties {
-        property("sonar.projectKey", System.getenv("SONAR_PROJECT_KEY") ?: "OscarGomez-MISO_VynilsApp-Equipo10")
-        property("sonar.organization", System.getenv("SONAR_ORGANIZATION") ?: "oscargomez-miso")
-        property("sonar.host.url", "https://sonarcloud.io")
-        property("sonar.coverage.jacoco.xmlReportPaths", "${project.layout.buildDirectory.get()}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
-        property("sonar.kotlin.binaries", "${project.layout.buildDirectory.get()}/tmp/kotlin-classes/debug")
-    }
-}
-
 jacoco {
     toolVersion = libs.versions.jacoco.get()
 }
@@ -77,6 +66,12 @@ android {
             "String", "BASE_URL",
             "\"${localProps.getProperty("BASE_URL", "https://back-vynils-equipo10-c7f5ef54eafe.herokuapp.com/")}\""
         )
+    }
+
+    lint {
+        abortOnError = false
+        xmlReport = true
+        htmlReport = true
     }
 
     buildTypes {

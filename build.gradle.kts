@@ -10,19 +10,13 @@ sonar {
         property("sonar.projectKey", System.getenv("SONAR_PROJECT_KEY") ?: "OscarGomez-MISO_VynilsApp-Equipo10")
         property("sonar.organization", System.getenv("SONAR_ORGANIZATION") ?: "oscargomez-miso")
         property("sonar.host.url", "https://sonarcloud.io")
-    }
-}
-
-project(":app") {
-    sonar {
-        properties {
-            val buildDir = project.layout.buildDirectory.get().asFile
-            property("sonar.sources", "src/main/java")
-            property("sonar.tests", "src/test/java")
-            property("sonar.java.binaries", "$buildDir/tmp/kotlin-classes/debug")
-            property("sonar.kotlin.binaries", "$buildDir/tmp/kotlin-classes/debug")
-            property("sonar.coverage.jacoco.xmlReportPaths", "$buildDir/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
-            property("sonar.androidLint.reportPaths", "$buildDir/reports/lint-results-debug.xml")
-        }
+        
+        // Configuración para el módulo app
+        property("sonar.sources", "app/src/main/java")
+        property("sonar.tests", "app/src/test/java")
+        property("sonar.java.binaries", "app/build/tmp/kotlin-classes/debug")
+        property("sonar.kotlin.binaries", "app/build/tmp/kotlin-classes/debug")
+        property("sonar.coverage.jacoco.xmlReportPaths", "app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+        property("sonar.androidLint.reportPaths", "app/build/reports/lint-results-debug.xml")
     }
 }
