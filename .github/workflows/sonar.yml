@@ -28,6 +28,8 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
+          arch: x86_64
+          disable-animations: true
           script: ./gradlew :app:lintDebug :app:jacocoTestReport --no-daemon
 
       - name: Run SonarCloud analysis

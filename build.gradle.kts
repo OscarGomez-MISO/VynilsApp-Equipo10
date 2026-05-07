@@ -27,7 +27,7 @@ project(":app") {
             property("sonar.junit.reportPaths", "$buildDir/test-results/testDebugUnitTest")
 
             // Fuentes y tests
-            property("sonar.sources", "src/main/java")
+            property("sonar.sources", "src/main/java,src/main/kotlin")
             property("sonar.tests", "src/test/java,src/androidTest/java")
         }
     }
