@@ -87,6 +87,95 @@ class CollectorsListTest {
         composeTestRule.onNodeWithText("SOCIEDAD DE BUSCADORES DE JOYAS").assertIsDisplayed()
     }
 
+    // HU06: Visualizar detalle de coleccionista
+
+    @Test
+    fun testHU06_collectorDetail_showsNameAndStats() {
+        composeTestRule.onNodeWithText("EXPLORAR COMO VISITANTE").performClick()
+        composeTestRule.onNodeWithText("COLECCIONISTAS").performClick()
+
+        composeTestRule.waitUntil(30000) {
+            composeTestRule.onAllNodesWithText("Manolo Bellon").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        composeTestRule.onNodeWithText("Manolo Bellon").performClick()
+
+        composeTestRule.waitUntil(20000) {
+            composeTestRule.onAllNodesWithTag("collector_detail_content").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        composeTestRule.onNodeWithText("Manolo Bellon").assertIsDisplayed()
+        composeTestRule.onAllNodesWithText("ÁLBUMES").onFirst().assertIsDisplayed()
+        composeTestRule.onAllNodesWithText("ARTISTAS").onFirst().assertIsDisplayed()
+        composeTestRule.onNodeWithText("RATING").assertIsDisplayed()
+    }
+
+    @Test
+    fun testHU06_collectorDetail_showsCollection() {
+        composeTestRule.onNodeWithText("EXPLORAR COMO VISITANTE").performClick()
+        composeTestRule.onNodeWithText("COLECCIONISTAS").performClick()
+
+        composeTestRule.waitUntil(30000) {
+            composeTestRule.onAllNodesWithText("Manolo Bellon").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        composeTestRule.onNodeWithText("Manolo Bellon").performClick()
+
+        composeTestRule.waitUntil(20000) {
+            composeTestRule.onAllNodesWithText("Mi Colección").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        composeTestRule.onNodeWithText("Mi Colección").assertIsDisplayed()
+    }
+
+    @Test
+    fun testHU06_collectorDetail_albumClickNavigatesToAlbumDetail() {
+        composeTestRule.onNodeWithText("EXPLORAR COMO VISITANTE").performClick()
+        composeTestRule.onNodeWithText("COLECCIONISTAS").performClick()
+
+        composeTestRule.waitUntil(30000) {
+            composeTestRule.onAllNodesWithText("Manolo Bellon").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        composeTestRule.onNodeWithText("Manolo Bellon").performClick()
+
+        composeTestRule.waitUntil(20000) {
+            composeTestRule.onAllNodesWithText("Mi Colección").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        composeTestRule.onNodeWithText("Buscando América").performClick()
+
+        composeTestRule.waitUntil(20000) {
+            composeTestRule.onAllNodesWithText("Detalle del Álbum").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        composeTestRule.onNodeWithText("Detalle del Álbum").assertIsDisplayed()
+    }
+
+    @Test
+    fun testHU06_collectorDetail_backNavigationReturnsList() {
+        composeTestRule.onNodeWithText("EXPLORAR COMO VISITANTE").performClick()
+        composeTestRule.onNodeWithText("COLECCIONISTAS").performClick()
+
+        composeTestRule.waitUntil(30000) {
+            composeTestRule.onAllNodesWithText("Manolo Bellon").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        composeTestRule.onNodeWithText("Manolo Bellon").performClick()
+
+        composeTestRule.waitUntil(20000) {
+            composeTestRule.onAllNodesWithTag("collector_detail_content").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        composeTestRule.onNodeWithContentDescription("Regresar").performClick()
+
+        composeTestRule.waitUntil(15000) {
+            composeTestRule.onAllNodesWithText("Los Coleccionistas").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        composeTestRule.onNodeWithText("Los Coleccionistas").assertIsDisplayed()
+    }
+
     @Test
     fun testHU05_displayCollectorsList_persistsOnTabChange() {
         composeTestRule.onNodeWithText("EXPLORAR COMO VISITANTE").performClick()
