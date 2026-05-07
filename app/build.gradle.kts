@@ -4,23 +4,11 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     id("jacoco")
-    alias(libs.plugins.sonarqube)
 }
 
 val localProps = Properties().apply {
     rootProject.file("local.properties").takeIf { it.exists() }
         ?.inputStream()?.use { load(it) }
-}
-
-// Configuración de SonarCloud para este módulo
-extensions.configure<org.sonarqube.gradle.SonarExtension> {
-    properties {
-        property("sonar.projectKey", System.getenv("SONAR_PROJECT_KEY") ?: "OscarGomez-MISO_VynilsApp-Equipo10")
-        property("sonar.organization", System.getenv("SONAR_ORGANIZATION") ?: "oscargomez-miso")
-        property("sonar.host.url", "https://sonarcloud.io")
-        property("sonar.coverage.jacoco.xmlReportPaths", "${project.layout.buildDirectory.get()}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
-        property("sonar.kotlin.binaries", "${project.layout.buildDirectory.get()}/tmp/kotlin-classes/debug")
-    }
 }
 
 jacoco {
