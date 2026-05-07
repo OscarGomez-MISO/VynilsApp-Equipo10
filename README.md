@@ -97,6 +97,32 @@ Una vez finalizada la ejecución desde la terminal, Gradle genera un reporte det
 
 Para visualizarlo, abre el archivo `index.html` en cualquier navegador web. Allí verás el resumen de éxitos, fallos y el tiempo de ejecución de cada escenario.
 
+## Análisis de Calidad y Cobertura (SonarCloud)
+
+El proyecto está integrado con **SonarCloud** para garantizar la calidad del código y monitorear la cobertura de las pruebas unitarias.
+
+### Herramientas y Reportes:
+*   **JaCoCo**: Se utiliza para medir la cobertura del código. Genera reportes en formato XML que son consumidos por SonarCloud.
+*   **SonarScanner**: Analiza el código en busca de bugs, vulnerabilidades y code smells.
+
+### Generación de Cobertura Local:
+Si deseas generar el reporte de cobertura manualmente en tu máquina, ejecuta:
+```bash
+./gradlew jacocoTestReport
+```
+Al finalizar, podrás encontrar el reporte detallado en:
+`app/build/reports/jacoco/jacocoTestReport/html/index.html`
+
+### Integración Continua (CI):
+El análisis se realiza automáticamente mediante GitHub Actions (`sonar.yml`) bajo las siguientes condiciones:
+1.  Cada vez que se realiza un **Push** a la rama `main`.
+2.  Al abrir o actualizar un **Pull Request** hacia `main`.
+
+El pipeline se encarga de:
+1.  Ejecutar las pruebas unitarias.
+2.  Generar el reporte de cobertura con JaCoCo.
+3.  Subir los resultados a SonarCloud usando las credenciales seguras (`SONAR_TOKEN`, `SONAR_PROJECT_KEY`, `SONAR_ORGANIZATION`) configuradas en el repositorio.
+
 ## Generación del APK
 
 Si necesitas generar o actualizar el instalador (APK) de la aplicación para pruebas en dispositivos reales, sigue estos pasos:
