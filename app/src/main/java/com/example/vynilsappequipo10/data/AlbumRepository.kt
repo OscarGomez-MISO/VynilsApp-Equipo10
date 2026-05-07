@@ -10,4 +10,7 @@ open class AlbumRepository(
     open suspend fun getAlbums(): List<Album> = service.getAlbums()
 
     open suspend fun getAlbumById(id: Int): Album = service.getAlbumById(id)
+
+    suspend fun addComment(albumId: Int, comment: com.example.vynilsappequipo10.domain.CommentRequest) = 
+        service.addComment(albumId, comment)
 }

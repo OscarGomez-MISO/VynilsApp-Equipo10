@@ -65,11 +65,15 @@ El proyecto cuenta con escenarios de prueba automatizados utilizando **Espresso*
     *   **Validación**: El botón "Agregar (+)" debe estar oculto (modo lectura).
 3.  **Navegación de Pestañas**:
     *   **Escenario**: El usuario navega a la pestaña de "Artistas" y "Coleccionistas".
-    *   **Validación**: En Artistas se muestra la lista real de artistas con el encabezado "BIBLIOTECA CURADA". En Coleccionistas se muestra el mensaje "Funcionalidad en desarrollo".
+    *   **Validación**: En Artistas se muestra la lista real de artistas con el encabezado "BIBLIOTECA CURADA". En Coleccionistas se muestra la lista real con el encabezado "SOCIEDAD DE BUSCADORES DE JOYAS".
 4.  **Detalle de Artista (HU04)**:
     *   **Escenario**: El usuario selecciona un artista del listado y visualiza su detalle.
     *   **Validación**: Se muestra nombre, fecha de nacimiento y descripción del artista, así como la lista de álbumes asociados. Al tocar un álbum navega al detalle del álbum. El botón de regreso vuelve al listado de artistas.
-5.  **Flujo de Salida (Logout)**:
+5.  **Listado de Coleccionistas (HU05)**:
+    *   **Escenario**: El usuario navega a la pestaña "Coleccionistas".
+    *   **Validación**: Se muestra el encabezado "SOCIEDAD DE BUSCADORES DE JOYAS", la lista de coleccionistas con nombre y cantidad de álbumes, y una barra de búsqueda funcional. Si no hay coleccionistas, se muestra un mensaje informativo.
+    *   **Archivos**: `CollectorsListTest.kt` (6 tests HU05)
+6.  **Flujo de Salida (Logout)**:
     *   **Escenario**: El usuario está en la pantalla principal y decide volver a la selección de rol.
     *   **Validación**: Al pulsar el botón "Home" en la cabecera, debe regresar a la pantalla de bienvenida.
 
@@ -93,6 +97,32 @@ Una vez finalizada la ejecución desde la terminal, Gradle genera un reporte det
 
 Para visualizarlo, abre el archivo `index.html` en cualquier navegador web. Allí verás el resumen de éxitos, fallos y el tiempo de ejecución de cada escenario.
 
+## Análisis de Calidad y Cobertura (SonarCloud)
+
+El proyecto está integrado con **SonarCloud** para garantizar la calidad del código y monitorear la cobertura de las pruebas unitarias.
+
+### Herramientas y Reportes:
+*   **JaCoCo**: Se utiliza para medir la cobertura del código. Genera reportes en formato XML que son consumidos por SonarCloud.
+*   **SonarScanner**: Analiza el código en busca de bugs, vulnerabilidades y code smells.
+
+### Generación de Cobertura Local:
+Si deseas generar el reporte de cobertura manualmente en tu máquina, ejecuta:
+```bash
+./gradlew jacocoTestReport
+```
+Al finalizar, podrás encontrar el reporte detallado en:
+`app/build/reports/jacoco/jacocoTestReport/html/index.html`
+
+### Integración Continua (CI):
+El análisis se realiza automáticamente mediante GitHub Actions (`sonar.yml`) bajo las siguientes condiciones:
+1.  Cada vez que se realiza un **Push** a la rama `main`.
+2.  Al abrir o actualizar un **Pull Request** hacia `main`.
+
+El pipeline se encarga de:
+1.  Ejecutar las pruebas unitarias.
+2.  Generar el reporte de cobertura con JaCoCo.
+3.  Subir los resultados a SonarCloud usando las credenciales seguras (`SONAR_TOKEN`, `SONAR_PROJECT_KEY`, `SONAR_ORGANIZATION`) configuradas en el repositorio.
+
 ## Generación del APK
 
 Si necesitas generar o actualizar el instalador (APK) de la aplicación para pruebas en dispositivos reales, sigue estos pasos:
@@ -108,5 +138,5 @@ Una vez finalizado el build, el archivo APK generado se encontrará en:
 `app/build/outputs/apk/debug/app-debug.apk`
 
 ### 3. Carpeta de Distribución
-Para facilitar el acceso, hemos habilitado la carpeta llamada `/release` en la raíz del repositorio donde se encuentra la versión más reciente lista para instalar:
-`release/vynils-app-v1.0.0.apk`
+Para facilitar el acceso, hemos habilitado la carpeta llamada `/release` en la raíz del repositorio donde se encuentran las versiones listas para instalar. La versión más reciente es:
+`release/vynils-app-v1.0.1.apk`

@@ -16,6 +16,10 @@ object RetrofitClient {
         retrofit.create(AlbumService::class.java)
     }
 
+    val collectorService: CollectorService by lazy {
+        retrofit.create(CollectorService::class.java)
+    }
+
     val musicianService: MusicianService by lazy {
         retrofit.create(MusicianService::class.java)
     }

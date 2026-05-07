@@ -123,8 +123,7 @@ private fun ArtistsContent(
         .background(ColorBackground)
         .testTag("artist_detail_list"),
     verticalArrangement = Arrangement.spacedBy(16.dp),
-    contentPadding = PaddingValues(16.dp)
-
+    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 80.dp)
     ) {
 
         item {

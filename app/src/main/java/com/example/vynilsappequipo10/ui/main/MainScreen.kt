@@ -33,6 +33,7 @@ import com.example.vynilsappequipo10.ui.artists.ArtistsScreen
 import com.example.vynilsappequipo10.domain.ArtistType
 import com.example.vynilsappequipo10.ui.artists.artistDetail.ArtistDetailScreen
 import com.example.vynilsappequipo10.ui.collectors.CollectorsScreen
+import com.example.vynilsappequipo10.ui.collectors.collectorDetail.CollectorDetailScreen
 import com.example.vynilsappequipo10.ui.theme.ColorBackground
 import com.example.vynilsappequipo10.ui.theme.ColorOrangePrimary
 import com.example.vynilsappequipo10.ui.theme.ColorSurface
@@ -116,6 +117,7 @@ fun MainScreen(isCollector: Boolean, onLogout: () -> Unit) {
                 val albumId = backStackEntry.arguments?.getInt("albumId") ?: return@composable
                 AlbumDetailScreen(
                     albumId = albumId,
+                    isCollector = isCollector,
                     onBackClick = { navController.popBackStack() }
                 )
             }
@@ -147,7 +149,24 @@ fun MainScreen(isCollector: Boolean, onLogout: () -> Unit) {
                 )
             }
             composable(MainTab.COLLECTORS.route) {
-                CollectorsScreen()
+                CollectorsScreen(
+                    onCollectorClick = { collectorId ->
+                        navController.navigate("collector_detail/$collectorId")
+                    }
+                )
+            }
+            composable(
+                route = "collector_detail/{collectorId}",
+                arguments = listOf(navArgument("collectorId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val collectorId = backStackEntry.arguments?.getInt("collectorId") ?: return@composable
+                CollectorDetailScreen(
+                    collectorId = collectorId,
+                    onBackClick = { navController.popBackStack() },
+                    onAlbumClick = { albumId ->
+                        navController.navigate("album_detail/$albumId")
+                    }
+                )
             }
         }
     }

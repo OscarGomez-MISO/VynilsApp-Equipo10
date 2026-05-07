@@ -77,7 +77,7 @@ class ArtistsListTest {
         composeTestRule.onNodeWithText("EXPLORAR COMO VISITANTE").performClick()
         
         composeTestRule.waitUntil(30000) {
-            composeTestRule.onAllNodesWithText("TOTAL DE LPS", substring = true)
+            composeTestRule.onAllNodes(hasText("TOTAL DE LPS", substring = true))
                 .fetchSemanticsNodes().isNotEmpty()
         }
         
