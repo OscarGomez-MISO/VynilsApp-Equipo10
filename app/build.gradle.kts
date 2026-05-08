@@ -49,9 +49,10 @@ val jacocoTestReport by tasks.registering(JacocoReport::class) {
     classDirectories.setFrom(files(javaClasses, kotlinClasses))
     sourceDirectories.setFrom(files("src/main/java"))
     
-    executionData.setFrom(fileTree(layout.buildDirectory) {
-        include("**/testDebugUnitTest.exec", "outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec")
-    })
+    executionData.setFrom(files(
+        layout.buildDirectory.file("jacoco/testDebugUnitTest.exec"),
+        layout.buildDirectory.file("outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec")
+    ))
 }
 
 android {
