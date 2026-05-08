@@ -1,6 +1,7 @@
 package com.example.vynilsappequipo10.data.remote
 
 import com.example.vynilsappequipo10.domain.Album
+import com.example.vynilsappequipo10.domain.AlbumRequest
 import com.example.vynilsappequipo10.domain.Comment
 import com.example.vynilsappequipo10.domain.CommentRequest
 import retrofit2.http.Body
@@ -14,6 +15,9 @@ interface AlbumService {
 
     @GET("albums/{id}")
     suspend fun getAlbumById(@Path("id") id: Int): Album
+
+    @POST("albums")
+    suspend fun createAlbum(@Body album: AlbumRequest): Album
 
     @POST("albums/{id}/comments")
     suspend fun addComment(

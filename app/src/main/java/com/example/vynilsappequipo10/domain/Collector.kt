@@ -38,6 +38,12 @@ data class CollectorDetail(
     val collectorAlbums: List<CollectorAlbum> = emptyList()
 )
 
+data class CollectorRequest(
+    val name: String,
+    val telephone: String,
+    val email: String
+)
+
 data class CommentRequest(
     val description: String,
     val rating: Int,

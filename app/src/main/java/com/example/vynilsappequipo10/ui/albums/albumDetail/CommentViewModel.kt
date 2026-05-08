@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vynilsappequipo10.data.AlbumRepository
 import com.example.vynilsappequipo10.data.CollectorRepository
-import com.example.vynilsappequipo10.domain.Collector
+import com.example.vynilsappequipo10.domain.CollectorRequest
 import com.example.vynilsappequipo10.domain.CollectorIdRequest
 import com.example.vynilsappequipo10.domain.CommentRequest
 import com.example.vynilsappequipo10.ui.main.UserSession
@@ -45,7 +45,7 @@ class CommentViewModel(
                     if (existing == null && !name.isNullOrBlank() && !telephone.isNullOrBlank()) {
                         Log.d("CommentViewModel", "Creating new collector: $email")
                         try {
-                            existing = collectorRepository.createCollector(Collector(name = name, telephone = telephone, email = email))
+                            existing = collectorRepository.createCollector(CollectorRequest(name = name, telephone = telephone, email = email))
                         } catch (e: Exception) {
                             Log.w("CommentViewModel", "Create failed, checking list one last time", e)
                             // Re-fetch in case of race condition or existing email not found in first fetch

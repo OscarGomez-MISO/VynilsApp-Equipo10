@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -29,6 +30,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.vynilsappequipo10.ui.albums.AlbumsScreen
 import com.example.vynilsappequipo10.ui.albums.albumDetail.AlbumDetailScreen
+import com.example.vynilsappequipo10.ui.albums.createAlbum.CreateAlbumScreen
 import com.example.vynilsappequipo10.ui.artists.ArtistsScreen
 import com.example.vynilsappequipo10.domain.ArtistType
 import com.example.vynilsappequipo10.ui.artists.artistDetail.ArtistDetailScreen
@@ -55,7 +57,18 @@ fun MainScreen(isCollector: Boolean, onLogout: () -> Unit) {
     Scaffold(
         containerColor = ColorBackground,
         floatingActionButton = {
-            if (isCollector && (currentRoute == MainTab.ALBUMS.route || currentRoute == MainTab.ARTISTS.route || currentRoute == MainTab.COLLECTORS.route)) {
+            if (isCollector && currentRoute == MainTab.ALBUMS.route) {
+                FloatingActionButton(
+                    onClick = {
+                        navController.navigate("create_album")
+                    },
+                    containerColor = ColorOrangePrimary,
+                    contentColor = Color.White,
+                    modifier = Modifier.testTag("fab_create_album")
+                ) {
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "Crear Álbum")
+                }
+            } else if (isCollector && (currentRoute == MainTab.ARTISTS.route || currentRoute == MainTab.COLLECTORS.route)) {
                 FloatingActionButton(
                     onClick = {
                         Toast.makeText(context, "Funcionalidad en desarrollo", Toast.LENGTH_SHORT).show()
@@ -119,6 +132,12 @@ fun MainScreen(isCollector: Boolean, onLogout: () -> Unit) {
                     albumId = albumId,
                     isCollector = isCollector,
                     onBackClick = { navController.popBackStack() }
+                )
+            }
+            composable("create_album") {
+                CreateAlbumScreen(
+                    onBackClick = { navController.popBackStack() },
+                    onAlbumCreated = { navController.popBackStack() }
                 )
             }
             composable(MainTab.ARTISTS.route) {
