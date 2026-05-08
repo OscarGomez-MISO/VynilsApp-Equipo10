@@ -16,17 +16,9 @@ sonar {
 project(":app") {
     sonar {
         properties {
-            // Binarios para que JaCoCo funcione
-            property("sonar.java.binaries", "build/intermediates/javac/debug/classes,build/tmp/kotlin-classes/debug")
-
-            // Reportes
+            // Reportes (Usando rutas relativas que el plugin de Android entiende)
             property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
             property("sonar.junit.reportPaths", "build/test-results/testDebugUnitTest")
-            
-            // Forzar inclusiones para debugging si es necesario
-            property("sonar.sources", "src/main/java")
-            property("sonar.tests", "src/test/java")
-            property("sonar.sourceEncoding", "UTF-8")
         }
     }
 }
