@@ -24,8 +24,16 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Run tests, lint and generate coverage report
-        run: ./gradlew :app:lintDebug :app:jacocoTestReport --no-daemon
+      - name: Run unit tests and generate coverage report
+        run: ./gradlew :app:testDebugUnitTest :app:jacocoTestReport --no-daemon
+
+      - name: Verify coverage report existence
+        run: |
+          ls -R app/build/reports/jacoco/
+          test -f app/build/reports/jacoco/test/jacocoTestReport.xml
+
+      - name: Run lint
+        run: ./gradlew :app:lintDebug --no-daemon
 
       - name: Run SonarCloud analysis
         env:

@@ -16,9 +16,12 @@ sonar {
 project(":app") {
     sonar {
         properties {
-            // Indicar a Sonar dónde encontrar el reporte XML generado por la tarea jacocoTestReport
+            // Ruta absoluta al reporte XML de JaCoCo
             property("sonar.coverage.jacoco.xmlReportPaths", "${rootDir}/app/build/reports/jacoco/test/jacocoTestReport.xml")
             property("sonar.junit.reportPaths", "${rootDir}/app/build/test-results/testDebugUnitTest")
+            
+            // Forzar binarios para el mapeo
+            property("sonar.java.binaries", "build/intermediates/javac/debug/classes,build/tmp/kotlin-classes/debug")
         }
     }
 }
