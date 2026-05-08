@@ -171,3 +171,4 @@ Una vez finalizado el build, el archivo APK generado se encontrará en:
 ### 3. Carpeta de Distribución
 Para facilitar el acceso, hemos habilitado la carpeta llamada `/release` en la raíz del repositorio donde se encuentran las versiones listas para instalar. La versión más reciente es:
 `release/vynils-app-v1.0.1.apk`
+
