@@ -10,15 +10,20 @@ sonar {
         property("sonar.projectKey", System.getenv("SONAR_PROJECT_KEY") ?: "OscarGomez-MISO_VynilsApp-Equipo10")
         property("sonar.organization", System.getenv("SONAR_ORGANIZATION") ?: "oscargomez-miso")
         property("sonar.host.url", "https://sonarcloud.io")
+        // Evitar doble indexación deshabilitando fuentes en la raíz
+        property("sonar.sources", "")
     }
 }
 
 project(":app") {
     sonar {
         properties {
-            // Reportes - Rutas absolutas garantizadas para el runner de GitHub
-            property("sonar.coverage.jacoco.xmlReportPaths", "${rootDir}/app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
-            property("sonar.junit.reportPaths", "${rootDir}/app/build/test-results/testDebugUnitTest")
+            val buildDir = project.layout.buildDirectory.get().asFile
+            // Ruta absoluta al reporte XML de JaCoCo
+            property("sonar.coverage.jacoco.xmlReportPaths", "$buildDir/reports/jacoco/test/jacocoTestReport.xml")
+            property("sonar.junit.reportPaths", "$buildDir/test-results/testDebugUnitTest")
+            // Indicar dónde están las fuentes del módulo
+            property("sonar.sources", "src/main/java")
         }
     }
 }

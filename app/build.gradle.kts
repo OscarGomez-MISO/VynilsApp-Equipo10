@@ -34,7 +34,8 @@ val jacocoTestReport by tasks.registering(JacocoReport::class) {
     reports {
         xml.required.set(true)
         html.required.set(true)
-        xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/jacocoTestReport/jacocoTestReport.xml"))
+        // Usar la ubicación estándar que Sonar busca por defecto
+        xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml"))
     }
 
     val fileFilter = listOf(
