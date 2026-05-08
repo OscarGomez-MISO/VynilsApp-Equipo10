@@ -24,7 +24,7 @@ open class CollectorRepository(
         service.getCollectorAlbums(id)
     }
 
-    suspend fun createCollector(collector: CollectorRequest): Collector = withContext(Dispatchers.IO) {
+    open suspend fun createCollector(collector: CollectorRequest): Collector = withContext(Dispatchers.IO) {
         service.createCollector(collector)
     }
 }

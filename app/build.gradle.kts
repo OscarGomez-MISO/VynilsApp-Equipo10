@@ -98,6 +98,7 @@ android {
     testOptions {
         unitTests.isIncludeAndroidResources = true
         animationsDisabled = true
+        unitTests.isReturnDefaultValues = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

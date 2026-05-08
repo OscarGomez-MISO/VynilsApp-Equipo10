@@ -18,11 +18,11 @@ open class AlbumRepository(
         service.getAlbumById(id)
     }
 
-    suspend fun createAlbum(album: AlbumRequest): Album = withContext(Dispatchers.IO) {
+    open suspend fun createAlbum(album: AlbumRequest): Album = withContext(Dispatchers.IO) {
         service.createAlbum(album)
     }
 
-    suspend fun addComment(albumId: Int, comment: com.example.vynilsappequipo10.domain.CommentRequest) = 
+    open suspend fun addComment(albumId: Int, comment: com.example.vynilsappequipo10.domain.CommentRequest) =
         withContext(Dispatchers.IO) {
             service.addComment(albumId, comment)
         }
