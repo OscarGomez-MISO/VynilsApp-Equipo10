@@ -29,14 +29,12 @@ tasks.matching { it.name.contains("AndroidTest") }.configureEach {
 }
 
 val jacocoTestReport by tasks.registering(JacocoReport::class) {
-    group = "Reporting"
-    description = "Generate Jacoco coverage reports."
-
     dependsOn("testDebugUnitTest")
-
+    
     reports {
         xml.required.set(true)
         html.required.set(true)
+        xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/jacocoTestReport/jacocoTestReport.xml"))
     }
 
     val fileFilter = listOf(
@@ -44,18 +42,15 @@ val jacocoTestReport by tasks.registering(JacocoReport::class) {
         "**/*Test*.*", "android/**/*.*", "**/*\$Lambda$*.*", "**/*\$ParametersRunnerFactory*.*",
         "**/*\$InjectAdapter*.*", "**/*\$ModuleAdapter*.*", "**/*\$ViewInjector*.*"
     )
-    
-    val javaClasses = fileTree(project.layout.buildDirectory.dir("intermediates/javac/debug/classes")) {
-        exclude(fileFilter)
-    }
-    val kotlinClasses = fileTree(project.layout.buildDirectory.dir("tmp/kotlin-classes/debug")) {
-        exclude(fileFilter)
-    }
+
+    val javaClasses = fileTree(layout.buildDirectory.dir("intermediates/javac/debug/classes")) { exclude(fileFilter) }
+    val kotlinClasses = fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/debug")) { exclude(fileFilter) }
 
     classDirectories.setFrom(files(javaClasses, kotlinClasses))
-    sourceDirectories.setFrom(files("${project.projectDir}/src/main/java"))
-    executionData.setFrom(fileTree(project.layout.buildDirectory.dir("jacoco")) {
-        include("testDebugUnitTest.exec")
+    sourceDirectories.setFrom(files("src/main/java"))
+    
+    executionData.setFrom(fileTree(layout.buildDirectory) {
+        include("**/testDebugUnitTest.exec", "outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec")
     })
 }
 

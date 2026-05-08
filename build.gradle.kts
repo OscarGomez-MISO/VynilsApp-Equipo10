@@ -16,9 +16,9 @@ sonar {
 project(":app") {
     sonar {
         properties {
-            // Reportes - Cambiado a rutas absolutas relativas al proyecto raíz
-            property("sonar.coverage.jacoco.xmlReportPaths", "${project.projectDir}/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
-            property("sonar.junit.reportPaths", "${project.projectDir}/build/test-results/testDebugUnitTest")
+            // Reportes - Rutas absolutas garantizadas para el runner de GitHub
+            property("sonar.coverage.jacoco.xmlReportPaths", "${rootDir}/app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+            property("sonar.junit.reportPaths", "${rootDir}/app/build/test-results/testDebugUnitTest")
         }
     }
 }
