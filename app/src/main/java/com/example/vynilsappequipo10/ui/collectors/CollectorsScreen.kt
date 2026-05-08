@@ -1,6 +1,7 @@
 package com.example.vynilsappequipo10.ui.collectors
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -31,6 +32,7 @@ import com.example.vynilsappequipo10.ui.theme.ColorTextHint
 @Composable
 fun CollectorsScreen(
     modifier: Modifier = Modifier,
+    onCollectorClick: (Int) -> Unit = {},
     viewModel: CollectorsViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -81,7 +83,8 @@ fun CollectorsScreen(
             CollectorsContent(
                 modifier = modifier,
                 uiState = uiState,
-                onSearchQueryChange = viewModel::onSearchQueryChange
+                onSearchQueryChange = viewModel::onSearchQueryChange,
+                onCollectorClick = onCollectorClick
             )
         }
     }
@@ -91,7 +94,8 @@ fun CollectorsScreen(
 private fun CollectorsContent(
     modifier: Modifier,
     uiState: CollectorsUiState,
-    onSearchQueryChange: (String) -> Unit
+    onSearchQueryChange: (String) -> Unit,
+    onCollectorClick: (Int) -> Unit
 ) {
     LazyColumn(
         modifier = modifier
@@ -151,7 +155,7 @@ private fun CollectorsContent(
             }
         } else {
             items(uiState.collectors) { collector ->
-                CollectorRow(collector = collector)
+                CollectorRow(collector = collector, onClick = { collector.id?.let { onCollectorClick(it) } })
             }
         }
     }
@@ -203,12 +207,13 @@ private fun CollectorsSearchBar(
 }
 
 @Composable
-private fun CollectorRow(collector: Collector) {
+private fun CollectorRow(collector: Collector, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .background(ColorSurface)
+            .clickable(onClick = onClick)
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
