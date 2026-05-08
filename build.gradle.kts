@@ -16,9 +16,9 @@ sonar {
 project(":app") {
     sonar {
         properties {
-            // Reportes (Usando rutas relativas que el plugin de Android entiende)
-            property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
-            property("sonar.junit.reportPaths", "build/test-results/testDebugUnitTest")
+            // Reportes - Cambiado a rutas absolutas relativas al proyecto raíz
+            property("sonar.coverage.jacoco.xmlReportPaths", "${project.projectDir}/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+            property("sonar.junit.reportPaths", "${project.projectDir}/build/test-results/testDebugUnitTest")
         }
     }
 }
