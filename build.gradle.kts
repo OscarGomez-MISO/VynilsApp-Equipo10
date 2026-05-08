@@ -25,10 +25,6 @@ project(":app") {
             property("sonar.coverage.jacoco.xmlReportPaths", "$buildDir/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
             property("sonar.androidLint.reportPaths", "$buildDir/reports/lint-results-debug.xml")
             property("sonar.junit.reportPaths", "$buildDir/test-results/testDebugUnitTest")
-
-            // Fuentes y tests
-            property("sonar.sources", "src/main/java")
-            property("sonar.tests", "src/test/java,src/androidTest/java")
         }
     }
 }
