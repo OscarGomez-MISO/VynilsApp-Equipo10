@@ -29,6 +29,9 @@ tasks.matching { it.name.contains("AndroidTest") }.configureEach {
 }
 
 val jacocoTestReport by tasks.registering(JacocoReport::class) {
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports."
+
     dependsOn("testDebugUnitTest")
 
     reports {
@@ -42,17 +45,17 @@ val jacocoTestReport by tasks.registering(JacocoReport::class) {
         "**/*\$InjectAdapter*.*", "**/*\$ModuleAdapter*.*", "**/*\$ViewInjector*.*"
     )
     
-    val javaClasses = fileTree("${project.layout.buildDirectory.get()}/intermediates/javac/debug/classes") {
+    val javaClasses = fileTree(project.layout.buildDirectory.dir("intermediates/javac/debug/classes")) {
         exclude(fileFilter)
     }
-    val kotlinClasses = fileTree("${project.layout.buildDirectory.get()}/tmp/kotlin-classes/debug") {
+    val kotlinClasses = fileTree(project.layout.buildDirectory.dir("tmp/kotlin-classes/debug")) {
         exclude(fileFilter)
     }
 
     classDirectories.setFrom(files(javaClasses, kotlinClasses))
     sourceDirectories.setFrom(files("${project.projectDir}/src/main/java"))
-    executionData.setFrom(fileTree(project.layout.buildDirectory.get()) {
-        include("jacoco/testDebugUnitTest.exec")
+    executionData.setFrom(fileTree(project.layout.buildDirectory.dir("jacoco")) {
+        include("testDebugUnitTest.exec")
     })
 }
 
