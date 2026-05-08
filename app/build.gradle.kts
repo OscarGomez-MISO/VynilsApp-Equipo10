@@ -20,7 +20,6 @@ tasks.withType<Test> {
         isIncludeNoLocationClasses = true
         excludes = listOf("jdk.internal.*")
     }
-    ignoreFailures = true
 }
 
 tasks.matching { it.name.contains("AndroidTest") }.configureEach {
@@ -30,7 +29,7 @@ tasks.matching { it.name.contains("AndroidTest") }.configureEach {
 }
 
 val jacocoTestReport by tasks.registering(JacocoReport::class) {
-    dependsOn("testDebugUnitTest", "connectedDebugAndroidTest")
+    dependsOn("testDebugUnitTest")
 
     reports {
         xml.required.set(true)
@@ -51,11 +50,10 @@ val jacocoTestReport by tasks.registering(JacocoReport::class) {
     }
 
     classDirectories.setFrom(files(javaClasses, kotlinClasses))
-    sourceDirectories.setFrom(files("$projectDir/src/main/java", "$projectDir/src/main/kotlin"))
+    sourceDirectories.setFrom(files("$projectDir/src/main/java"))
     executionData.setFrom(fileTree(project.layout.buildDirectory.get()) {
         include("jacoco/testDebugUnitTest.exec")
         include("outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec")
-        include("outputs/code_coverage/debugAndroidTest/connected/**/*.ec")
     })
 }
 

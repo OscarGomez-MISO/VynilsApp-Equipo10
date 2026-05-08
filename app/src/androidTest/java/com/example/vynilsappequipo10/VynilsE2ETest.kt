@@ -28,7 +28,7 @@ class VynilsE2ETest {
         composeTestRule.onNodeWithText("ENTRAR COMO COLECCIONISTA  →").performClick()
 
         // Wait for list to load
-        composeTestRule.waitUntil(60000) {
+        composeTestRule.waitUntil(30000) {
             composeTestRule.onAllNodesWithText("TOTAL DE LPS").fetchSemanticsNodes().isNotEmpty()
         }
 
@@ -37,7 +37,7 @@ class VynilsE2ETest {
         // Search for the album using the testTag to find a specific album to be deterministic
         composeTestRule.onNodeWithTag("album_search_field").performTextInput("Salsa")
         
-        composeTestRule.waitUntil(60000) {
+        composeTestRule.waitUntil(20000) {
             // Find "Salsa" in the list results, not the search bar
             composeTestRule.onAllNodesWithText("Salsa").fetchSemanticsNodes().size >= 2
         }
@@ -45,7 +45,7 @@ class VynilsE2ETest {
         // Click the album (likely the last one found which is the card, first is the search text)
         composeTestRule.onAllNodesWithText("Salsa").onLast().performClick()
 
-        composeTestRule.waitUntil(60000) {
+        composeTestRule.waitUntil(30000) {
             composeTestRule.onAllNodesWithText("Descripción").fetchSemanticsNodes().isNotEmpty()
         }
 
@@ -114,12 +114,12 @@ class VynilsE2ETest {
     fun testCollectorCommentFlow_NewUserRegistration() {
         composeTestRule.onNodeWithText("ENTRAR COMO COLECCIONISTA  →").performClick()
 
-        composeTestRule.waitUntil(60000) {
+        composeTestRule.waitUntil(30000) {
             composeTestRule.onAllNodes(hasText("Salsa")).fetchSemanticsNodes().isNotEmpty()
         }
         composeTestRule.onAllNodesWithText("Salsa").onLast().performClick()
 
-        composeTestRule.waitUntil(60000) {
+        composeTestRule.waitUntil(25000) {
             composeTestRule.onAllNodes(hasTestTag("add_comment_fab")).fetchSemanticsNodes().isNotEmpty()
         }
         composeTestRule.onNodeWithTag("add_comment_fab").performClick()
@@ -144,7 +144,7 @@ class VynilsE2ETest {
         composeTestRule.onNodeWithTag("comment_send_button").performScrollTo().performClick()
 
         // VALIDACIÓN CRÍTICA: Esperar el mensaje de éxito en la UI
-        composeTestRule.waitUntil(60000) {
+        composeTestRule.waitUntil(45000) {
             composeTestRule.onAllNodes(hasTestTag("comment_success_message")).fetchSemanticsNodes().isNotEmpty()
         }
         
@@ -158,13 +158,13 @@ class VynilsE2ETest {
     fun testCollectorCommentFlow_SwitchAccount() {
         composeTestRule.onNodeWithText("ENTRAR COMO COLECCIONISTA  →").performClick()
         
-        composeTestRule.waitUntil(60000) {
+        composeTestRule.waitUntil(30000) {
             composeTestRule.onAllNodes(hasText("Salsa")).fetchSemanticsNodes().isNotEmpty()
         }
         composeTestRule.onAllNodesWithText("Salsa").onLast().performClick()
 
         // 1. Identificarse para crear una sesión activa
-        composeTestRule.waitUntil(60000) {
+        composeTestRule.waitUntil(25000) {
             composeTestRule.onAllNodes(hasTestTag("add_comment_fab")).fetchSemanticsNodes().isNotEmpty()
         }
         composeTestRule.onNodeWithTag("add_comment_fab").performClick()
@@ -195,7 +195,7 @@ class VynilsE2ETest {
         }
 
         // VALIDACIÓN CRÍTICA: Esperar el mensaje de éxito antes de intentar re-abrir
-        composeTestRule.waitUntil(60000) {
+        composeTestRule.waitUntil(45000) {
             composeTestRule.onAllNodes(hasTestTag("comment_success_message")).fetchSemanticsNodes().isNotEmpty()
         }
         

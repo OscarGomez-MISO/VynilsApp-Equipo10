@@ -17,14 +17,14 @@ class ArtistDetailTest {
         composeTestRule.onNodeWithText("EXPLORAR COMO VISITANTE").performClick()
         composeTestRule.onNodeWithText("ARTISTAS").performClick()
         
-        composeTestRule.waitUntil(60000) {
+        composeTestRule.waitUntil(30000) {
             composeTestRule.onAllNodesWithText("BIBLIOTECA CURADA").fetchSemanticsNodes().isNotEmpty()
         }
 
         // Search for the specific artist
         composeTestRule.onNodeWithTag("artist_search_field").performTextInput(name)
 
-        composeTestRule.waitUntil(20000) {
+        composeTestRule.waitUntil(10000) {
             composeTestRule.onAllNodesWithText(name).fetchSemanticsNodes().size >= 2
         }
         
@@ -35,7 +35,7 @@ class ArtistDetailTest {
     fun testHU04_selectArtist_displaysArtistDetail() {
         navigateToArtist("Queen")
         
-        composeTestRule.waitUntil(60000) {
+        composeTestRule.waitUntil(30000) {
             composeTestRule.onAllNodes(hasText("FECHA DE", substring = true))
                 .fetchSemanticsNodes().isNotEmpty()
         }
