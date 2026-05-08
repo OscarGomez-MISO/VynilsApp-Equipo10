@@ -45,10 +45,11 @@ val jacocoTestReport by tasks.registering(JacocoReport::class) {
     )
 
     val javaClasses = fileTree(layout.buildDirectory.dir("intermediates/javac/debug/classes")) { exclude(fileFilter) }
-    val kotlinClasses = fileTree(layout.buildDirectory.dir("classes/kotlin/debug")) { exclude(fileFilter) }
+    val kotlinClasses = fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/debug")) { exclude(fileFilter) }
+    val newKotlinClasses = fileTree(layout.buildDirectory.dir("intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes")) { exclude(fileFilter) }
 
-    classDirectories.setFrom(files(javaClasses, kotlinClasses))
-    sourceDirectories.setFrom(files("src/main/java"))
+    classDirectories.setFrom(files(javaClasses, kotlinClasses, newKotlinClasses))
+    sourceDirectories.setFrom(files("${project.projectDir}/src/main/java"))
     
     executionData.setFrom(files(
         layout.buildDirectory.file("jacoco/testDebugUnitTest.exec"),

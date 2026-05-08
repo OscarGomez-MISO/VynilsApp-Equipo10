@@ -10,10 +10,16 @@ sonar {
         property("sonar.projectKey", System.getenv("SONAR_PROJECT_KEY") ?: "OscarGomez-MISO_VynilsApp-Equipo10")
         property("sonar.organization", System.getenv("SONAR_ORGANIZATION") ?: "oscargomez-miso")
         property("sonar.host.url", "https://sonarcloud.io")
-        
-        // Configuración de cobertura simplificada para evitar doble indexación
-        property("sonar.coverage.jacoco.xmlReportPaths", "app/build/reports/jacoco/test/jacocoTestReport.xml")
-        property("sonar.junit.reportPaths", "app/build/test-results/testDebugUnitTest")
+    }
+}
+
+project(":app") {
+    sonar {
+        properties {
+            // Usamos una ruta relativa al módulo, que es lo que el plugin de Sonar espera dentro de un bloque project()
+            property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml")
+            property("sonar.junit.reportPaths", "build/test-results/testDebugUnitTest")
+        }
     }
 }
 

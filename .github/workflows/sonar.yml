@@ -29,10 +29,15 @@ jobs:
 
       - name: Verify coverage report existence
         run: |
+          echo "Listing all .class files to debug JaCoCo input:"
+          find app/build -name "*.class" | head -n 10
           ls -R app/build/reports/jacoco/
           test -f app/build/reports/jacoco/test/jacocoTestReport.xml
           echo "XML Report content preview:"
           head -n 20 app/build/reports/jacoco/test/jacocoTestReport.xml
+          echo "Validating XML content (should show packages and lines):"
+          grep -o "<package name=" app/build/reports/jacoco/test/jacocoTestReport.xml | head -n 5 || echo "No packages found in XML"
+          grep -o "counter type=\"LINE\"" app/build/reports/jacoco/test/jacocoTestReport.xml | head -n 5 || echo "No lines found in XML"
 
       - name: Run lint
         run: ./gradlew :app:lintDebug --no-daemon
