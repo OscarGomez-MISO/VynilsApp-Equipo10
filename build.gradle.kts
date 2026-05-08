@@ -16,13 +16,10 @@ sonar {
 project(":app") {
     sonar {
         properties {
-            val buildDir = project.layout.buildDirectory.get().asFile
-            property("sonar.sources", "src/main/java")
-            property("sonar.tests", "src/test/java")
-            property("sonar.java.binaries", "$buildDir/tmp/kotlin-classes/debug")
-            property("sonar.kotlin.binaries", "$buildDir/tmp/kotlin-classes/debug")
-            property("sonar.coverage.jacoco.xmlReportPaths", "$buildDir/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
-            property("sonar.androidLint.reportPaths", "$buildDir/reports/lint-results-debug.xml")
+            // Usamos una ruta relativa al módulo, que es lo que el plugin de Sonar espera dentro de un bloque project()
+            property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml")
+            property("sonar.junit.reportPaths", "build/test-results/testDebugUnitTest")
         }
     }
 }
+
