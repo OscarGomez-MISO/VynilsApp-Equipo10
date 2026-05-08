@@ -16,15 +16,17 @@ sonar {
 project(":app") {
     sonar {
         properties {
-            val buildDir = project.layout.buildDirectory.get().asFile
-
-            // Binarios para que JaCoCo funcione (crucial para el 0%)
+            // Binarios para que JaCoCo funcione
             property("sonar.java.binaries", "build/intermediates/javac/debug/classes,build/tmp/kotlin-classes/debug")
 
-            // Rutas de reportes (Rutas relativas al módulo para asegurar compatibilidad con Sonar)
+            // Reportes
             property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
-            property("sonar.androidLint.reportPaths", "build/reports/lint-results-debug.xml")
             property("sonar.junit.reportPaths", "build/test-results/testDebugUnitTest")
+            
+            // Forzar inclusiones para debugging si es necesario
+            property("sonar.sources", "src/main/java")
+            property("sonar.tests", "src/test/java")
+            property("sonar.sourceEncoding", "UTF-8")
         }
     }
 }
