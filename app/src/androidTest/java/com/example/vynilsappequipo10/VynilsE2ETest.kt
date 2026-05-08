@@ -32,7 +32,11 @@ class VynilsE2ETest {
             composeTestRule.onAllNodesWithText("TOTAL DE LPS").fetchSemanticsNodes().isNotEmpty()
         }
 
-        composeTestRule.onNodeWithContentDescription("Agregar").assertIsDisplayed()
+        // Wait for FAB to be displayed
+        composeTestRule.waitUntil(10000) {
+            composeTestRule.onAllNodesWithTag("fab_create_album").fetchSemanticsNodes().isNotEmpty()
+        }
+        composeTestRule.onNodeWithTag("fab_create_album").assertIsDisplayed()
 
         // Search for the album using the testTag to find a specific album to be deterministic
         composeTestRule.onNodeWithTag("album_search_field").performTextInput("Salsa")
@@ -98,7 +102,7 @@ class VynilsE2ETest {
         composeTestRule.onNodeWithText("EXPLORAR COMO VISITANTE").performClick()
 
         // 1. Verificar que en la lista NO hay botón de agregar
-        composeTestRule.onNodeWithContentDescription("Agregar").assertDoesNotExist()
+        composeTestRule.onNodeWithTag("fab_create_album").assertDoesNotExist()
 
         // 2. Navegar al detalle de un álbum
         composeTestRule.waitUntil(20000) {
@@ -143,11 +147,19 @@ class VynilsE2ETest {
 
         composeTestRule.onNodeWithTag("comment_send_button").performScrollTo().performClick()
 
-        // VALIDACIÓN CRÍTICA: Esperar el mensaje de éxito en la UI
-        composeTestRule.waitUntil(45000) {
-            composeTestRule.onAllNodes(hasTestTag("comment_success_message")).fetchSemanticsNodes().isNotEmpty()
+        // VALIDACIÓN MEJORADA: Esperar éxito O error para no colgarse 45s
+        composeTestRule.waitUntil(30000) {
+            val hasSuccess = composeTestRule.onAllNodes(hasTestTag("comment_success_message")).fetchSemanticsNodes().isNotEmpty()
+            val hasError = composeTestRule.onAllNodes(hasTestTag("comment_error_message")).fetchSemanticsNodes().isNotEmpty()
+            hasSuccess || hasError
         }
         
+        // Si hay error, mostrar por qué falló el test
+        val errorNodes = composeTestRule.onAllNodes(hasTestTag("comment_error_message")).fetchSemanticsNodes()
+        if (errorNodes.isNotEmpty()) {
+            throw AssertionError("El API devolvió un error al registrar el comentario/coleccionista. Revisa los logs.")
+        }
+
         // Verificar que realmente se cierre después del éxito
         composeTestRule.waitUntil(15000) {
             composeTestRule.onAllNodes(hasTestTag("comment_success_message")).fetchSemanticsNodes().isEmpty()
@@ -186,7 +198,7 @@ class VynilsE2ETest {
             !isSheetOpen || needsProfile || hasSuccess
         }
 
-        // Si se quedó en perfil, completamos los datos con un formato similar al que le funcionó al usuario
+        // Si se quedó en perfil, completamos los datos
         if (composeTestRule.onAllNodes(hasText("Perfil no encontrado", substring = true)).fetchSemanticsNodes().isNotEmpty()) {
             val randomPhone = "313${(1000000..9999999).random()}"
             composeTestRule.onNodeWithTag("comment_name_field").performTextInput("Oscar Tester $timestamp")
@@ -194,9 +206,15 @@ class VynilsE2ETest {
             composeTestRule.onNodeWithTag("comment_send_button").performScrollTo().performClick()
         }
 
-        // VALIDACIÓN CRÍTICA: Esperar el mensaje de éxito antes de intentar re-abrir
+        // VALIDACIÓN MEJORADA: Esperar éxito O error
         composeTestRule.waitUntil(45000) {
-            composeTestRule.onAllNodes(hasTestTag("comment_success_message")).fetchSemanticsNodes().isNotEmpty()
+            val hasSuccess = composeTestRule.onAllNodes(hasTestTag("comment_success_message")).fetchSemanticsNodes().isNotEmpty()
+            val hasError = composeTestRule.onAllNodes(hasTestTag("comment_error_message")).fetchSemanticsNodes().isNotEmpty()
+            hasSuccess || hasError
+        }
+
+        if (composeTestRule.onAllNodes(hasTestTag("comment_error_message")).fetchSemanticsNodes().isNotEmpty()) {
+            throw AssertionError("El API devolvió un error en SwitchAccount. Revisa los logs.")
         }
         
         // Esperar a que la hoja se cierre realmente (desaparezca el mensaje de éxito)
