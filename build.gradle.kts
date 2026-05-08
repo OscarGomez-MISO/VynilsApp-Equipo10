@@ -10,22 +10,10 @@ sonar {
         property("sonar.projectKey", System.getenv("SONAR_PROJECT_KEY") ?: "OscarGomez-MISO_VynilsApp-Equipo10")
         property("sonar.organization", System.getenv("SONAR_ORGANIZATION") ?: "oscargomez-miso")
         property("sonar.host.url", "https://sonarcloud.io")
-        // Desactivar escaneo en la raíz para evitar duplicados
-        property("sonar.sources", "")
+        
+        // Configuración de cobertura simplificada para evitar doble indexación
+        property("sonar.coverage.jacoco.xmlReportPaths", "app/build/reports/jacoco/test/jacocoTestReport.xml")
+        property("sonar.junit.reportPaths", "app/build/test-results/testDebugUnitTest")
     }
 }
 
-project(":app") {
-    sonar {
-        properties {
-            val projectDir = project.projectDir.absolutePath
-            val buildDir = project.layout.buildDirectory.get().asFile.absolutePath
-
-            property("sonar.sources", "$projectDir/src/main/java")
-            property("sonar.tests", "$projectDir/src/test/java")
-            property("sonar.java.binaries", "$buildDir/intermediates/javac/debug/classes,$buildDir/tmp/kotlin-classes/debug")
-            property("sonar.coverage.jacoco.xmlReportPaths", "$buildDir/reports/jacoco/test/jacocoTestReport.xml")
-            property("sonar.junit.reportPaths", "$buildDir/test-results/testDebugUnitTest")
-        }
-    }
-}
