@@ -144,6 +144,7 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation("org.jacoco:org.jacoco.agent:0.8.12:runtime")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.kotlinx.coroutines.test)
