@@ -5,13 +5,19 @@ import com.example.vynilsappequipo10.data.remote.MusicianService
 import com.example.vynilsappequipo10.data.remote.RetrofitClient
 import com.example.vynilsappequipo10.domain.Artist
 import com.example.vynilsappequipo10.domain.ArtistType
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
 
 open class ArtistRepository(
     private val musicianService: MusicianService = RetrofitClient.musicianService,
     private val bandService: BandService = RetrofitClient.bandService
 ) {
-    open suspend fun getArtists(): List<Artist> {
-        val musicians = musicianService.getMusicians().map { m ->
+    open suspend fun getArtists(): List<Artist> = withContext(Dispatchers.IO) {
+        val musiciansDeferred = async { musicianService.getMusicians() }
+        val bandsDeferred = async { bandService.getBands() }
+
+        val musicians = musiciansDeferred.await().map { m ->
             Artist(
                 id = m.id,
                 name = m.name,
@@ -22,7 +28,7 @@ open class ArtistRepository(
                 type = ArtistType.MUSICIAN
             )
         }
-        val bands = bandService.getBands().map { b ->
+        val bands = bandsDeferred.await().map { b ->
             Artist(
                 id = b.id,
                 name = b.name,
@@ -33,11 +39,11 @@ open class ArtistRepository(
                 type = ArtistType.BAND
             )
         }
-        return musicians + bands
+        musicians + bands
     }
 
-    open suspend fun getArtistById(id: Int, type: ArtistType): Artist {
-        return if (type == ArtistType.MUSICIAN) {
+    open suspend fun getArtistById(id: Int, type: ArtistType): Artist = withContext(Dispatchers.IO) {
+        if (type == ArtistType.MUSICIAN) {
             val m = musicianService.getMusicianById(id)
             Artist(id = m.id, name = m.name, image = m.image, description = m.description,
                 date = m.birthDate, albums = m.albums, type = ArtistType.MUSICIAN)

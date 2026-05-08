@@ -6,12 +6,9 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
 
@@ -34,34 +31,45 @@ class AlbumDetailViewModelTest {
     }
 
     @Test
-    fun `loadAlbum success updates uiState`() {
-        // Arrange
+    fun `loadAlbum success updates uiState with album`() = runTest {
+        // Given
         val albumId = 1
-        val album = Album(albumId, "Album 1", "cover1", "2023-01-01", "Desc 1", "Genre 1", "Label 1")
-        coEvery { repository.getAlbumById(albumId) } returns album
+        val expectedAlbum = Album(
+            id = albumId,
+            name = "Test Album",
+            cover = "cover.jpg",
+            releaseDate = "2021-01-01",
+            description = "Description",
+            genre = "Rock",
+            recordLabel = "Sony",
+            tracks = emptyList(),
+            performers = emptyList(),
+            comments = emptyList()
+        )
+        coEvery { repository.getAlbumById(albumId) } returns expectedAlbum
 
-        // Act
+        // When
         viewModel.loadAlbum(albumId)
 
-        // Assert
-        assertEquals(album, viewModel.uiState.value.album)
-        assertFalse(viewModel.uiState.value.isLoading)
+        // Then
+        assertEquals(expectedAlbum, viewModel.uiState.value.album)
+        assertEquals(false, viewModel.uiState.value.isLoading)
         assertEquals(null, viewModel.uiState.value.error)
     }
 
     @Test
-    fun `loadAlbum error updates uiState`() {
-        // Arrange
+    fun `loadAlbum error updates uiState with error message`() = runTest {
+        // Given
         val albumId = 1
-        val errorMessage = "Not Found"
+        val errorMessage = "Network Error"
         coEvery { repository.getAlbumById(albumId) } throws Exception(errorMessage)
 
-        // Act
+        // When
         viewModel.loadAlbum(albumId)
 
-        // Assert
+        // Then
         assertEquals(null, viewModel.uiState.value.album)
-        assertFalse(viewModel.uiState.value.isLoading)
+        assertEquals(false, viewModel.uiState.value.isLoading)
         assertEquals(errorMessage, viewModel.uiState.value.error)
     }
 }
