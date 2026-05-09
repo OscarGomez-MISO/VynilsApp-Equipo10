@@ -22,6 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.res.stringResource
+import com.example.vynilsappequipo10.R
 import com.example.vynilsappequipo10.ui.theme.ColorBackground
 import com.example.vynilsappequipo10.ui.theme.ColorOrangePrimary
 import com.example.vynilsappequipo10.ui.theme.ColorSurface
@@ -44,12 +46,12 @@ fun CreateAlbumScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Crear Álbum", color = Color.White) },
+                title = { Text(stringResource(R.string.create_album_title), color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Regresar",
+                            contentDescription = stringResource(R.string.create_album_back),
                             tint = Color.White
                         )
                     }
@@ -82,7 +84,7 @@ fun CreateAlbumScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "¡Álbum creado exitosamente!",
+                            text = stringResource(R.string.create_album_success),
                             color = Color.White,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold
@@ -104,14 +106,16 @@ fun CreateAlbumScreen(
                     CreateAlbumForm(
                         formState = formState,
                         viewModel = viewModel,
-                        errorMessage = state.message
+                        errorMessage = state.message,
+                        isFormValid = viewModel.isFormValid.collectAsState().value
                     )
                 }
                 else -> {
                     CreateAlbumForm(
                         formState = formState,
                         viewModel = viewModel,
-                        errorMessage = null
+                        errorMessage = null,
+                        isFormValid = viewModel.isFormValid.collectAsState().value
                     )
                 }
             }
@@ -124,7 +128,8 @@ fun CreateAlbumScreen(
 private fun CreateAlbumForm(
     formState: AlbumFormState,
     viewModel: CreateAlbumViewModel,
-    errorMessage: String?
+    errorMessage: String?,
+    isFormValid: Boolean = false
 ) {
     val context = LocalContext.current
     var expandedGenre by remember { mutableStateOf(false) }
@@ -138,7 +143,7 @@ private fun CreateAlbumForm(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "Información del Álbum",
+            text = stringResource(R.string.create_album_info_title),
             color = Color.White,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold
@@ -162,7 +167,7 @@ private fun CreateAlbumForm(
         OutlinedTextField(
             value = formState.name,
             onValueChange = viewModel::updateName,
-            label = { Text("Nombre del Álbum") },
+            label = { Text(stringResource(R.string.create_album_name)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .testTag("album_name_field"),
@@ -181,7 +186,7 @@ private fun CreateAlbumForm(
         OutlinedTextField(
             value = formState.cover,
             onValueChange = viewModel::updateCover,
-            label = { Text("URL de la Portada") },
+            label = { Text(stringResource(R.string.create_album_cover)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .testTag("album_cover_field"),
@@ -224,7 +229,7 @@ private fun CreateAlbumForm(
                 }
             } else "",
             onValueChange = { },
-            label = { Text("Fecha de Lanzamiento") },
+            label = { Text(stringResource(R.string.create_album_date)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { datePickerDialog.show() }
@@ -245,7 +250,7 @@ private fun CreateAlbumForm(
                 IconButton(onClick = { datePickerDialog.show() }) {
                     Icon(
                         imageVector = Icons.Default.DateRange,
-                        contentDescription = "Seleccionar fecha",
+                        contentDescription = stringResource(R.string.create_album_select_date),
                         tint = ColorOrangePrimary
                     )
                 }
@@ -256,7 +261,7 @@ private fun CreateAlbumForm(
         OutlinedTextField(
             value = formState.description,
             onValueChange = viewModel::updateDescription,
-            label = { Text("Descripción") },
+            label = { Text(stringResource(R.string.album_detail_description)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(120.dp)
@@ -281,7 +286,7 @@ private fun CreateAlbumForm(
                 value = formState.genre,
                 onValueChange = { },
                 readOnly = true,
-                label = { Text("Género") },
+                label = { Text(stringResource(R.string.create_album_genre)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .menuAnchor()
@@ -329,7 +334,7 @@ private fun CreateAlbumForm(
                 value = formState.recordLabel,
                 onValueChange = { },
                 readOnly = true,
-                label = { Text("Sello Discográfico") },
+                label = { Text(stringResource(R.string.create_album_record_label)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .menuAnchor()
@@ -373,15 +378,19 @@ private fun CreateAlbumForm(
         // Botón Crear
         Button(
             onClick = { viewModel.createAlbum() },
+            enabled = isFormValid,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
                 .testTag("create_album_button"),
-            colors = ButtonDefaults.buttonColors(containerColor = ColorOrangePrimary),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = ColorOrangePrimary,
+                disabledContainerColor = ColorOrangePrimary.copy(alpha = 0.4f)
+            ),
             shape = RoundedCornerShape(12.dp)
         ) {
             Text(
-                text = "Crear Álbum",
+                text = stringResource(R.string.create_album_title),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
             )

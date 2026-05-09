@@ -112,6 +112,14 @@ Se han aplicado micro-optimizaciones y mejores prácticas para garantizar una ex
 2.  **Gestión de Memoria**: Uso de la librería **Glide** con integración nativa para Compose, que gestiona automáticamente el cacheo de imágenes, el redimensionamiento y la liberación de memoria de mapas de bits.
 3.  **Eficiencia en Listas**: Implementación de `LazyColumn` en el detalle del álbum para un renderizado eficiente de canciones, artistas y comentarios, minimizando el consumo de recursos en álbumes con mucho contenido.
 
+### Optimización del Flujo Crear Álbum y Listado de Álbumes:
+Se han aplicado mejoras de rendimiento y experiencia de usuario en la funcionalidad de **Crear Álbum** y el **Listado de Álbumes**:
+1.  **Auto-recarga de la lista tras crear álbum**: Al crear un álbum exitosamente, la lista de álbumes se recarga automáticamente para reflejar el nuevo álbum sin necesidad de navegar manualmente ni reiniciar la app. Esto se logra compartiendo una instancia de `AlbumsViewModel` entre `MainScreen` y `AlbumsScreen`.
+2.  **Prevención de doble envío**: Se implementó un guard (`isSubmitting`) en `CreateAlbumViewModel` para evitar que el usuario envíe el formulario múltiples veces al hacer clic rápido en el botón de crear.
+3.  **Validación reactiva del formulario**: Se agregó un `StateFlow<Boolean>` (`isFormValid`) derivado del estado del formulario que deshabilita el botón "Crear Álbum" hasta que todos los campos estén completos, proporcionando retroalimentación visual inmediata al usuario.
+4.  **Preservación del filtro de búsqueda tras recarga**: Al recargar la lista después de crear un álbum, se mantiene el query de búsqueda activo, evitando que el usuario pierda su contexto de navegación.
+5.  **Internacionalización (i18n)**: Todos los textos hardcodeados de la pantalla de creación de álbum fueron extraídos a `strings.xml` usando `stringResource()`, facilitando futuras traducciones y cumpliendo con las mejores prácticas de Android.
+
 ### Herramientas y Reportes:
 *   **JaCoCo**: Se utiliza para medir la cobertura del código. Genera reportes en formato XML que son consumidos por SonarCloud.
 *   **SonarScanner**: Analiza el código en busca de bugs, vulnerabilidades y code smells.

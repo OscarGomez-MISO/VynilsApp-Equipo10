@@ -39,4 +39,18 @@
     <string name="error_loading_albums">No se pudieron cargar los álbumes</string>
     <string name="error_loading_artists">No se pudieron cargar los artistas</string>
     <string name="error_loading_collectors">No se pudieron cargar los coleccionistas</string>
+
+    <!-- Create Album -->
+    <string name="create_album_title">Crear Álbum</string>
+    <string name="create_album_back">Regresar</string>
+    <string name="create_album_success">¡Álbum creado exitosamente!</string>
+    <string name="create_album_info_title">Información del Álbum</string>
+    <string name="create_album_name">Nombre del Álbum</string>
+    <string name="create_album_cover">URL de la Portada</string>
+    <string name="create_album_date">Fecha de Lanzamiento</string>
+    <string name="create_album_select_date">Seleccionar fecha</string>
+    <string name="create_album_genre">Género</string>
+    <string name="create_album_record_label">Sello Discográfico</string>
+    <string name="create_album_required_fields">Todos los campos son obligatorios</string>
+    <string name="create_album_error">Error al crear el álbum</string>
 </resources>
