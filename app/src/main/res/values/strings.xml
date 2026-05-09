@@ -1,18 +1,6 @@
 <resources>
     <string name="app_name">VynilsAppEquipo10</string>
 
-    <!-- Welcome screen -->
-    <string name="welcome_title">Vinilos</string>
-    <string name="welcome_heading">Tu bóveda sonora te espera</string>
-    <string name="welcome_subtitle">THE EDITORIAL COLLECTOR</string>
-    <string name="btn_enter_collector">ENTRAR COMO COLECCIONISTA  →</string>
-    <string name="btn_explore_visitor">EXPLORAR COMO VISITANTE</string>
-    <string name="divider_or">O ACCEDE MEDIANTE</string>
-    <string name="btn_google">G   Google</string>
-    <string name="btn_apple">Apple</string>
-    <string name="welcome_signup_prefix">¿Eres nuevo? </string>
-    <string name="welcome_signup_link">Únete a la sociedad</string>
-
     <!-- Album Detail -->
     <string name="album_detail_title">Detalle del Álbum</string>
     <string name="album_detail_retry">Reintentar</string>
@@ -31,14 +19,18 @@
     <string name="comment_field_rating">Calificación</string>
     <string name="comment_field_description">Tu comentario</string>
     <string name="comment_btn_send">Enviar Comentario</string>
-    <string name="comment_success">Comentario agregado con éxito</string>
+
+    <!-- Album Detail extra -->
+    <string name="album_release_date">Lanzamiento: %1$s</string>
+
+    <!-- Comment Sheet -->
+    <string name="comment_publishing_as">Publicando como: </string>
+    <string name="comment_change_account">¿No eres tú? Cambiar cuenta</string>
+    <string name="comment_profile_not_found">Perfil no encontrado. Por favor completa tus datos:</string>
 
     <!-- General UI -->
     <string name="search_placeholder">Busca en las cajas…</string>
-    <string name="nav_home">Inicio</string>
     <string name="error_loading_albums">No se pudieron cargar los álbumes</string>
-    <string name="error_loading_artists">No se pudieron cargar los artistas</string>
-    <string name="error_loading_collectors">No se pudieron cargar los coleccionistas</string>
 
     <!-- Create Album -->
     <string name="create_album_title">Crear Álbum</string>
@@ -51,6 +43,7 @@
     <string name="create_album_select_date">Seleccionar fecha</string>
     <string name="create_album_genre">Género</string>
     <string name="create_album_record_label">Sello Discográfico</string>
-    <string name="create_album_required_fields">Todos los campos son obligatorios</string>
-    <string name="create_album_error">Error al crear el álbum</string>
+
+    <!-- General messages -->
+    <string name="msg_feature_in_development">Funcionalidad en desarrollo</string>
 </resources>

@@ -2,10 +2,10 @@ package com.example.vynilsappequipo10.ui.albums.albumDetail
 
 import android.graphics.drawable.ColorDrawable
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -25,16 +25,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.ui.res.stringResource
-import com.example.vynilsappequipo10.R
-import kotlinx.coroutines.delay
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.example.vynilsappequipo10.R
 import com.example.vynilsappequipo10.domain.Album
 import com.example.vynilsappequipo10.domain.Comment
 import com.example.vynilsappequipo10.domain.Performer
@@ -44,6 +43,10 @@ import com.example.vynilsappequipo10.ui.theme.ColorBackground
 import com.example.vynilsappequipo10.ui.theme.ColorOrangePrimary
 import com.example.vynilsappequipo10.ui.theme.ColorSurface
 import com.example.vynilsappequipo10.ui.theme.ColorTextHint
+import kotlinx.coroutines.delay
+
+private const val COMMENT_SUCCESS_DELAY_MS = 1500L
+private const val MAX_RATING = 5
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,14 +71,12 @@ fun AlbumDetailScreen(
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.album_detail_retry), // reusing back logic
+                            contentDescription = stringResource(R.string.create_album_back),
                             tint = Color.White
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = ColorBackground
-                )
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = ColorBackground)
             )
         },
         floatingActionButton = {
@@ -93,6 +94,8 @@ fun AlbumDetailScreen(
         containerColor = ColorBackground
     ) { padding ->
         Box(modifier = Modifier.padding(padding).fillMaxSize()) {
+            val album = uiState.album
+            val error = uiState.error
             when {
                 uiState.isLoading -> {
                     CircularProgressIndicator(
@@ -100,12 +103,12 @@ fun AlbumDetailScreen(
                         color = ColorOrangePrimary
                     )
                 }
-                uiState.error != null -> {
+                error != null -> {
                     Column(
                         modifier = Modifier.align(Alignment.Center),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = stringResource(R.string.album_detail_error_prefix, uiState.error!!), color = Color.White)
+                        Text(stringResource(R.string.album_detail_error_prefix, error), color = Color.White)
                         Spacer(Modifier.height(16.dp))
                         Button(
                             onClick = { viewModel.loadAlbum(albumId) },
@@ -115,16 +118,14 @@ fun AlbumDetailScreen(
                         }
                     }
                 }
-                uiState.album != null -> {
-                    AlbumDetailContent(uiState.album!!)
-                }
+                album != null -> AlbumDetailContent(album)
             }
         }
 
         if (showCommentSheet) {
             CommentSheet(
                 albumId = albumId,
-                onDismiss = { 
+                onDismiss = {
                     showCommentSheet = false
                     viewModel.loadAlbum(albumId)
                 }
@@ -138,36 +139,25 @@ fun AlbumDetailScreen(
 fun CommentSheet(albumId: Int, onDismiss: () -> Unit) {
     val context = LocalContext.current
     val userSession = remember { UserSession(context.applicationContext) }
-    val commentViewModel: CommentViewModel = viewModel(factory = object : androidx.lifecycle.ViewModelProvider.Factory {
-        override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(CommentViewModel::class.java)) {
-                @Suppress("UNCHECKED_CAST")
-                return CommentViewModel(userSession = userSession) as T
-            }
-            throw IllegalArgumentException("Unknown ViewModel class")
-        }
-    })
-    
+    val commentViewModel: CommentViewModel = viewModel { CommentViewModel(userSession = userSession) }
+
     val state by commentViewModel.state.collectAsState()
     val sheetState = rememberModalBottomSheetState()
-    
+    val collectorId = userSession.getCollectorId()
+
     var email by rememberSaveable { mutableStateOf(userSession.getCollectorEmail() ?: "") }
-    var rating by rememberSaveable { mutableIntStateOf(5) }
+    var rating by rememberSaveable { mutableIntStateOf(MAX_RATING) }
     var description by rememberSaveable { mutableStateOf("") }
     var name by rememberSaveable { mutableStateOf("") }
     var telephone by rememberSaveable { mutableStateOf("") }
-    var isChangingUser by rememberSaveable(userSession.getCollectorId()) { 
-        mutableStateOf(userSession.getCollectorId() == -1) 
+    var isChangingUser by rememberSaveable(collectorId) {
+        mutableStateOf(collectorId == -1)
     }
 
-    // Sync state and email when the sheet enters composition
     LaunchedEffect(Unit) {
         commentViewModel.resetState()
-        val currentId = userSession.getCollectorId()
-        val currentEmail = userSession.getCollectorEmail() ?: ""
-        
-        if (currentId != -1) {
-            email = currentEmail
+        if (collectorId != -1) {
+            email = userSession.getCollectorEmail() ?: ""
             isChangingUser = false
         }
     }
@@ -186,237 +176,270 @@ fun CommentSheet(albumId: Int, onDismiss: () -> Unit) {
                 .testTag("comment_sheet_content"),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(stringResource(R.string.comment_sheet_title), color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Text(
+                stringResource(R.string.comment_sheet_title),
+                color = Color.White,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
 
             when (val currentState = state) {
-                is CommentUiState.Loading -> CircularProgressIndicator(color = ColorOrangePrimary, modifier = Modifier.align(Alignment.CenterHorizontally))
-                is CommentUiState.Success -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 32.dp)
-                            .testTag("comment_success_message"),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Star, // Usando Star como placeholder de éxito
-                            contentDescription = null,
-                            tint = Color.Green,
-                            modifier = Modifier.size(48.dp)
-                        )
-                        Spacer(Modifier.height(16.dp))
-                        Text(
-                            text = currentState.message,
-                            color = Color.White,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    LaunchedEffect(currentState) { 
-                        delay(1500) // Mostrar el mensaje por 1.5 segundos
-                        onDismiss() 
-                    }
-                }
-                is CommentUiState.Error -> {
-                    Column(modifier = Modifier.testTag("comment_error_message")) {
-                        Text(currentState.message, color = Color.Red)
-                        Button(onClick = { commentViewModel.resetState() }) {
-                            Text("Reintentar")
-                        }
-                    }
-                }
-                else -> {
-                    if (!isChangingUser && userSession.getCollectorId() != -1) {
-                        Column {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("Publicando como: ", color = ColorTextHint, fontSize = 14.sp)
-                                Text(
-                                    text = userSession.getCollectorEmail() ?: "",
-                                    color = Color.White,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 14.sp,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                            TextButton(
-                                onClick = { isChangingUser = true },
-                                contentPadding = PaddingValues(0.dp),
-                                modifier = Modifier.height(32.dp)
-                            ) {
-                                Text("¿No eres tú? Cambiar cuenta", color = ColorOrangePrimary, fontSize = 12.sp)
-                            }
-                        }
-                    } else {
-                        OutlinedTextField(
-                            value = email,
-                            onValueChange = { email = it },
-                            label = { Text(stringResource(R.string.comment_field_email)) },
-                            modifier = Modifier.fillMaxWidth().testTag("comment_email_field"),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
-                                focusedBorderColor = ColorOrangePrimary,
-                                unfocusedBorderColor = ColorTextHint
-                            )
+                is CommentUiState.Loading -> CircularProgressIndicator(
+                    color = ColorOrangePrimary,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+                is CommentUiState.Success -> CommentSheetSuccess(currentState, onDismiss)
+                is CommentUiState.Error -> CommentSheetError(currentState) { commentViewModel.resetState() }
+                else -> CommentSheetForm(
+                    state = currentState,
+                    userSession = userSession,
+                    collectorId = collectorId,
+                    email = email,
+                    onEmailChange = { email = it },
+                    rating = rating,
+                    onRatingChange = { rating = it },
+                    description = description,
+                    onDescriptionChange = { description = it },
+                    name = name,
+                    onNameChange = { name = it },
+                    telephone = telephone,
+                    onTelephoneChange = { telephone = it },
+                    isChangingUser = isChangingUser,
+                    onChangeUser = { isChangingUser = true },
+                    onSend = {
+                        commentViewModel.postComment(
+                            albumId, description, rating, email,
+                            name.ifEmpty { null },
+                            telephone.ifEmpty { null }
                         )
                     }
-
-                    if (currentState is CommentUiState.NeedProfile) {
-                        Text("Perfil no encontrado. Por favor completa tus datos:", color = ColorOrangePrimary, fontSize = 14.sp)
-                        OutlinedTextField(
-                            value = name,
-                            onValueChange = { name = it },
-                            label = { Text(stringResource(R.string.comment_field_name)) },
-                            modifier = Modifier.fillMaxWidth().testTag("comment_name_field"),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
-                                focusedBorderColor = ColorOrangePrimary,
-                                unfocusedBorderColor = ColorTextHint
-                            )
-                        )
-                        OutlinedTextField(
-                            value = telephone,
-                            onValueChange = { telephone = it },
-                            label = { Text(stringResource(R.string.comment_field_phone)) },
-                            modifier = Modifier.fillMaxWidth().testTag("comment_phone_field"),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
-                                focusedBorderColor = ColorOrangePrimary,
-                                unfocusedBorderColor = ColorTextHint
-                            )
-                        )
-                    }
-
-                    Text(stringResource(R.string.comment_field_rating), color = Color.White)
-                    Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-                        repeat(5) { index ->
-                            IconButton(onClick = { rating = index + 1 }) {
-                                Icon(
-                                    imageVector = Icons.Default.Star,
-                                    contentDescription = null,
-                                    tint = if (index < rating) ColorOrangePrimary else Color.Gray.copy(alpha = 0.5f)
-                                )
-                            }
-                        }
-                    }
-
-                    OutlinedTextField(
-                        value = description,
-                        onValueChange = { description = it },
-                        label = { Text(stringResource(R.string.comment_field_description)) },
-                        modifier = Modifier.fillMaxWidth().height(100.dp).testTag("comment_description_field"),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                            focusedBorderColor = ColorOrangePrimary,
-                            unfocusedBorderColor = ColorTextHint
-                        )
-                    )
-
-                    Button(
-                        onClick = { 
-                            commentViewModel.postComment(
-                                albumId, description, rating, email, 
-                                if (name.isNotEmpty()) name else null, 
-                                if (telephone.isNotEmpty()) telephone else null
-                            )
-                        },
-                        modifier = Modifier.fillMaxWidth().height(56.dp).testTag("comment_send_button"),
-                        colors = ButtonDefaults.buttonColors(containerColor = ColorOrangePrimary),
-                        enabled = description.isNotEmpty() && email.isNotEmpty()
-                    ) {
-                        Text(stringResource(R.string.comment_btn_send))
-                    }
-                }
+                )
             }
         }
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-private fun AlbumDetailContent(album: Album) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-        contentPadding = PaddingValues(bottom = 88.dp)
+private fun CommentSheetSuccess(state: CommentUiState.Success, onDismiss: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 32.dp)
+            .testTag("comment_success_message"),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Portada e Información Básica
-        item {
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                GlideImage(
-                    model = album.cover,
-                    contentDescription = album.name,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f)
-                        .clip(RoundedCornerShape(12.dp)),
-                    contentScale = ContentScale.Crop
-                ) {
-                    it.placeholder(ColorDrawable(0xFF2E2824.toInt()))
-                      .error(ColorDrawable(0xFF2E2824.toInt()))
-                }
+        Icon(
+            imageVector = Icons.Default.Star,
+            contentDescription = null,
+            tint = Color.Green,
+            modifier = Modifier.size(48.dp)
+        )
+        Spacer(Modifier.height(16.dp))
+        Text(text = state.message, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+    }
+    LaunchedEffect(state) {
+        delay(COMMENT_SUCCESS_DELAY_MS)
+        onDismiss()
+    }
+}
 
-                Column {
-                    Text(
-                        text = album.name,
-                        color = Color.White,
-                        fontSize = 26.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "${album.genre} • ${album.recordLabel}",
-                        color = ColorOrangePrimary,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Text(
-                        text = "Lanzamiento: ${album.releaseDate.take(10)}",
-                        color = ColorTextHint,
-                        fontSize = 14.sp
-                    )
-                }
+@Composable
+private fun CommentSheetError(state: CommentUiState.Error, onRetry: () -> Unit) {
+    Column(modifier = Modifier.testTag("comment_error_message")) {
+        Text(state.message, color = Color.Red)
+        Button(onClick = onRetry) {
+            Text(stringResource(R.string.album_detail_retry))
+        }
+    }
+}
+
+@Composable
+private fun CommentSheetForm(
+    state: CommentUiState,
+    userSession: UserSession,
+    collectorId: Int,
+    email: String,
+    onEmailChange: (String) -> Unit,
+    rating: Int,
+    onRatingChange: (Int) -> Unit,
+    description: String,
+    onDescriptionChange: (String) -> Unit,
+    name: String,
+    onNameChange: (String) -> Unit,
+    telephone: String,
+    onTelephoneChange: (String) -> Unit,
+    isChangingUser: Boolean,
+    onChangeUser: () -> Unit,
+    onSend: () -> Unit
+) {
+    if (!isChangingUser && collectorId != -1) {
+        Column {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.comment_publishing_as), color = ColorTextHint, fontSize = 14.sp)
+                Text(
+                    text = userSession.getCollectorEmail() ?: "",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            TextButton(
+                onClick = onChangeUser,
+                contentPadding = PaddingValues(0.dp),
+                modifier = Modifier.height(32.dp)
+            ) {
+                Text(stringResource(R.string.comment_change_account), color = ColorOrangePrimary, fontSize = 12.sp)
             }
         }
+    } else {
+        OutlinedTextField(
+            value = email,
+            onValueChange = onEmailChange,
+            label = { Text(stringResource(R.string.comment_field_email)) },
+            modifier = Modifier.fillMaxWidth().testTag("comment_email_field"),
+            colors = commentFieldColors()
+        )
+    }
 
-        // Descripción
-        item {
-            SectionTitle(stringResource(R.string.album_detail_description))
-            Text(
-                text = album.description,
-                color = Color.White,
-                fontSize = 14.sp,
-                lineHeight = 22.sp
-            )
-        }
+    if (state is CommentUiState.NeedProfile) {
+        Text(stringResource(R.string.comment_profile_not_found), color = ColorOrangePrimary, fontSize = 14.sp)
+        OutlinedTextField(
+            value = name,
+            onValueChange = onNameChange,
+            label = { Text(stringResource(R.string.comment_field_name)) },
+            modifier = Modifier.fillMaxWidth().testTag("comment_name_field"),
+            colors = commentFieldColors()
+        )
+        OutlinedTextField(
+            value = telephone,
+            onValueChange = onTelephoneChange,
+            label = { Text(stringResource(R.string.comment_field_phone)) },
+            modifier = Modifier.fillMaxWidth().testTag("comment_phone_field"),
+            colors = commentFieldColors()
+        )
+    }
 
-        // Tracks (Canciones)
-        if (album.tracks.isNotEmpty()) {
-            item { SectionTitle(stringResource(R.string.album_detail_tracks)) }
-            items(album.tracks, key = { it.id }) { track ->
-                TrackItem(track)
-            }
-        }
-
-        // Performers (Artistas)
-        if (album.performers.isNotEmpty()) {
-            item { SectionTitle(stringResource(R.string.album_detail_performers)) }
-            items(album.performers, key = { it.id }) { performer ->
-                PerformerItem(performer)
-            }
-        }
-
-        // Comments (Comentarios)
-        if (album.comments.isNotEmpty()) {
-            item { SectionTitle(stringResource(R.string.album_detail_comments)) }
-            items(album.comments, key = { it.id }) { comment ->
-                CommentItem(comment)
+    Text(stringResource(R.string.comment_field_rating), color = Color.White)
+    Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+        repeat(MAX_RATING) { index ->
+            IconButton(onClick = { onRatingChange(index + 1) }) {
+                Icon(
+                    imageVector = Icons.Default.Star,
+                    contentDescription = null,
+                    tint = if (index < rating) ColorOrangePrimary else Color.Gray.copy(alpha = 0.5f)
+                )
             }
         }
     }
+
+    OutlinedTextField(
+        value = description,
+        onValueChange = onDescriptionChange,
+        label = { Text(stringResource(R.string.comment_field_description)) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp)
+            .testTag("comment_description_field"),
+        colors = commentFieldColors()
+    )
+
+    Button(
+        onClick = onSend,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .testTag("comment_send_button"),
+        colors = ButtonDefaults.buttonColors(containerColor = ColorOrangePrimary),
+        enabled = description.isNotEmpty() && email.isNotEmpty()
+    ) {
+        Text(stringResource(R.string.comment_btn_send))
+    }
+}
+
+@Composable
+private fun commentFieldColors() = OutlinedTextFieldDefaults.colors(
+    focusedTextColor = Color.White,
+    unfocusedTextColor = Color.White,
+    focusedBorderColor = ColorOrangePrimary,
+    unfocusedBorderColor = ColorTextHint
+)
+
+@Composable
+private fun AlbumDetailContent(album: Album) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+        contentPadding = PaddingValues(bottom = 88.dp)
+    ) {
+        albumCoverSection(album)
+        albumDescriptionSection(album)
+        albumTracksSection(album.tracks)
+        albumPerformersSection(album.performers)
+        albumCommentsSection(album.comments)
+    }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+private fun LazyListScope.albumCoverSection(album: Album) {
+    item {
+        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            GlideImage(
+                model = album.cover,
+                contentDescription = album.name,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(12.dp)),
+                contentScale = ContentScale.Crop
+            ) {
+                it.placeholder(ColorDrawable(0xFF2E2824.toInt()))
+                  .error(ColorDrawable(0xFF2E2824.toInt()))
+            }
+            Column {
+                Text(album.name, color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
+                Text(
+                    text = "${album.genre} • ${album.recordLabel}",
+                    color = ColorOrangePrimary,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = stringResource(R.string.album_release_date, album.releaseDate.take(10)),
+                    color = ColorTextHint,
+                    fontSize = 14.sp
+                )
+            }
+        }
+    }
+}
+
+private fun LazyListScope.albumDescriptionSection(album: Album) {
+    item {
+        SectionTitle(stringResource(R.string.album_detail_description))
+        Text(text = album.description, color = Color.White, fontSize = 14.sp, lineHeight = 22.sp)
+    }
+}
+
+private fun LazyListScope.albumTracksSection(tracks: List<Track>) {
+    if (tracks.isEmpty()) return
+    item { SectionTitle(stringResource(R.string.album_detail_tracks)) }
+    items(tracks, key = { it.id }) { TrackItem(it) }
+}
+
+private fun LazyListScope.albumPerformersSection(performers: List<Performer>) {
+    if (performers.isEmpty()) return
+    item { SectionTitle(stringResource(R.string.album_detail_performers)) }
+    items(performers, key = { it.id }) { PerformerItem(it) }
+}
+
+private fun LazyListScope.albumCommentsSection(comments: List<Comment>) {
+    if (comments.isEmpty()) return
+    item { SectionTitle(stringResource(R.string.album_detail_comments)) }
+    items(comments, key = { it.id }) { CommentItem(it) }
 }
 
 @Composable
@@ -433,32 +456,21 @@ private fun SectionTitle(title: String) {
 @Composable
 private fun TrackItem(track: Track) {
     val context = LocalContext.current
+    val msgDevelopment = stringResource(R.string.msg_feature_in_development)
     Surface(
         color = ColorSurface,
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {
-                Toast.makeText(context, "Funcionalidad en desarrollo", Toast.LENGTH_SHORT).show()
-            }
+            .clickable { Toast.makeText(context, msgDevelopment, Toast.LENGTH_SHORT).show() }
     ) {
         Row(
             modifier = Modifier.padding(12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = track.name,
-                color = Color.White,
-                fontSize = 14.sp,
-                modifier = Modifier.weight(1f)
-            )
-            Text(
-                text = track.duration,
-                color = ColorTextHint,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold
-            )
+            Text(text = track.name, color = Color.White, fontSize = 14.sp, modifier = Modifier.weight(1f))
+            Text(text = track.duration, color = ColorTextHint, fontSize = 14.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -467,12 +479,11 @@ private fun TrackItem(track: Track) {
 @Composable
 private fun PerformerItem(performer: Performer) {
     val context = LocalContext.current
+    val msgDevelopment = stringResource(R.string.msg_feature_in_development)
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {
-                Toast.makeText(context, "Funcionalidad en desarrollo", Toast.LENGTH_SHORT).show()
-            },
+            .clickable { Toast.makeText(context, msgDevelopment, Toast.LENGTH_SHORT).show() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         GlideImage(
@@ -488,12 +499,7 @@ private fun PerformerItem(performer: Performer) {
         }
         Spacer(Modifier.width(16.dp))
         Column {
-            Text(
-                text = performer.name,
-                color = Color.White,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold
-            )
+            Text(performer.name, color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Bold)
             Text(
                 text = performer.description,
                 color = ColorTextHint,
@@ -508,18 +514,17 @@ private fun PerformerItem(performer: Performer) {
 @Composable
 private fun CommentItem(comment: Comment) {
     val context = LocalContext.current
+    val msgDevelopment = stringResource(R.string.msg_feature_in_development)
     Surface(
         color = ColorSurface,
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {
-                Toast.makeText(context, "Funcionalidad en desarrollo", Toast.LENGTH_SHORT).show()
-            }
+            .clickable { Toast.makeText(context, msgDevelopment, Toast.LENGTH_SHORT).show() }
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                repeat(5) { index ->
+                repeat(MAX_RATING) { index ->
                     Icon(
                         imageVector = Icons.Default.Star,
                         contentDescription = null,
@@ -529,12 +534,7 @@ private fun CommentItem(comment: Comment) {
                 }
             }
             Spacer(Modifier.height(8.dp))
-            Text(
-                text = comment.description,
-                color = Color.White,
-                fontSize = 13.sp,
-                lineHeight = 18.sp
-            )
+            Text(text = comment.description, color = Color.White, fontSize = 13.sp, lineHeight = 18.sp)
         }
     }
 }
