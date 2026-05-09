@@ -59,6 +59,8 @@ import com.example.vynilsappequipo10.ui.theme.ColorOrangePrimary
 import com.example.vynilsappequipo10.ui.theme.ColorSurface
 import com.example.vynilsappequipo10.ui.theme.ColorTextHint
 
+import androidx.compose.ui.res.stringResource
+import com.example.vynilsappequipo10.R
 import androidx.compose.material.icons.filled.Home
 
 @Composable
@@ -86,7 +88,7 @@ fun AlbumsScreen(
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = "No se pudo cargar los álbumes",
+                        text = stringResource(R.string.error_loading_albums),
                         color = Color.White,
                         fontSize = 16.sp
                     )
@@ -101,7 +103,7 @@ fun AlbumsScreen(
                         onClick = { viewModel.loadAlbums() },
                         colors = ButtonDefaults.buttonColors(containerColor = ColorOrangePrimary)
                     ) {
-                        Text("Reintentar")
+                        Text(stringResource(R.string.album_detail_retry))
                     }
                 }
             }
@@ -145,7 +147,7 @@ private fun AlbumsContent(
             )
         }
         item(span = { GridItemSpan(2) }) { Spacer(Modifier.height(4.dp)) }
-        items(uiState.albums) { album -> AlbumCard(album, onAlbumClick) }
+        items(uiState.albums, key = { it.id }) { album -> AlbumCard(album, onAlbumClick) }
         item(span = { GridItemSpan(2) }) { Spacer(Modifier.height(8.dp)) }
     }
 }
@@ -251,7 +253,7 @@ private fun SearchBar(query: String, onQueryChange: (String) -> Unit) {
             Spacer(Modifier.width(8.dp))
             Box(modifier = Modifier.weight(1f)) {
                 if (query.isEmpty()) {
-                    Text(text = "Busca en tus cajas...", color = ColorTextHint, fontSize = 14.sp)
+                    Text(text = stringResource(R.string.search_placeholder), color = ColorTextHint, fontSize = 14.sp)
                 }
                 BasicTextField(
                     value = query,

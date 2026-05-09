@@ -101,6 +101,17 @@ Para visualizarlo, abre el archivo `index.html` en cualquier navegador web. All�
 
 El proyecto está integrado con **SonarCloud** para garantizar la calidad del código y monitorear la cobertura de las pruebas unitarias.
 
+### Mejoras en Pruebas Unitarias (HU02 & HU06):
+Se ha incrementado la cobertura de pruebas unitarias enfocándose en las funcionalidades de **Detalle de Álbum** y **Comentarios**, asegurando la robustez de la lógica de negocio en los ViewModels:
+*   **AlbumDetailViewModelTest**: Valida la carga correcta de datos del álbum y el manejo de estados de error/carga.
+*   **CommentViewModelTest**: Cubre escenarios complejos como la creación de nuevos coleccionistas, uso de sesiones existentes y manejo de perfiles incompletos al comentar.
+
+### Optimización y Rendimiento:
+Se han aplicado micro-optimizaciones y mejores prácticas para garantizar una experiencia fluida:
+1.  **Prevención de ANRs**: Todas las operaciones de red se ejecutan de forma asíncrona mediante Corrutinas de Kotlin (`viewModelScope`), liberando el hilo principal de la UI.
+2.  **Gestión de Memoria**: Uso de la librería **Glide** con integración nativa para Compose, que gestiona automáticamente el cacheo de imágenes, el redimensionamiento y la liberación de memoria de mapas de bits.
+3.  **Eficiencia en Listas**: Implementación de `LazyColumn` en el detalle del álbum para un renderizado eficiente de canciones, artistas y comentarios, minimizando el consumo de recursos en álbumes con mucho contenido.
+
 ### Herramientas y Reportes:
 *   **JaCoCo**: Se utiliza para medir la cobertura del código. Genera reportes en formato XML que son consumidos por SonarCloud.
 *   **SonarScanner**: Analiza el código en busca de bugs, vulnerabilidades y code smells.
@@ -112,6 +123,26 @@ Si deseas generar el reporte de cobertura manualmente en tu máquina, ejecuta:
 ```
 Al finalizar, podrás encontrar el reporte detallado en:
 `app/build/reports/jacoco/jacocoTestReport/html/index.html`
+
+## Perfilamiento de Recursos (Resource Profiling)
+
+Para cumplir con el análisis de consumo de recursos en 3 dispositivos físicos, se recomienda seguir este flujo usando **Android Studio Profiler**:
+
+1.  **Preparación**: Conecta el dispositivo físico y asegúrate de que la compilación sea de tipo `debug` (o `profileable`).
+2.  **Métricas de Memoria (Memory Profiler)**:
+    *   Navega por la pantalla de álbumes y abre el detalle de al menos 5 álbumes con imágenes pesadas.
+    *   Observa el impacto en el **Heap**. Gracias a la optimización con `Glide`, deberías notar que la memoria se mantiene estable y los Bitmaps se reciclan correctamente.
+    *   Usa **LeakCanary** (ya integrado en la versión debug) para detectar fugas de memoria automáticamente durante la sesión.
+3.  **Métricas de CPU (CPU Profiler)**:
+    *   Realiza scroll rápido en la lista de artistas y comentarios.
+    *   Verifica que no existan picos de uso superiores al 30% gracias a la implementación de `keys` en los `LazyColumn`.
+4.  **Inspección de Red (Network Inspector)**:
+    *   Valida que las peticiones a `/albums` y `/artists` devuelvan solo los campos necesarios y que el tiempo de respuesta sea óptimo (configurado con timeout de 30s).
+
+### Dispositivos Recomendados para el Perfilamiento:
+1.  **Gama Baja** (ej. Android 7/8, 2GB RAM): Para medir el impacto crítico de memoria.
+2.  **Gama Media** (ej. Android 11/12, 4-6GB RAM): Escenario de uso común.
+3.  **Gama Alta** (ej. Android 13/14, 8GB+ RAM): Para medir fluidez máxima y tiempos de carga.
 
 ### Integración Continua (CI):
 El análisis se realiza automáticamente mediante GitHub Actions (`sonar.yml`) bajo las siguientes condiciones:
@@ -140,3 +171,4 @@ Una vez finalizado el build, el archivo APK generado se encontrará en:
 ### 3. Carpeta de Distribución
 Para facilitar el acceso, hemos habilitado la carpeta llamada `/release` en la raíz del repositorio donde se encuentran las versiones listas para instalar. La versión más reciente es:
 `release/vynils-app-v1.0.1.apk`
+

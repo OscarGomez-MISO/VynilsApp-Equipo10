@@ -31,6 +31,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.res.stringResource
+import com.example.vynilsappequipo10.R
 import kotlinx.coroutines.delay
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -62,12 +64,12 @@ fun AlbumDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Detalle del Álbum", color = Color.White) },
+                title = { Text(stringResource(R.string.album_detail_title), color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Regresar",
+                            contentDescription = stringResource(R.string.album_detail_retry), // reusing back logic
                             tint = Color.White
                         )
                     }
@@ -84,7 +86,7 @@ fun AlbumDetailScreen(
                     containerColor = ColorOrangePrimary,
                     contentColor = Color.White,
                     icon = { Icon(Icons.Default.Add, contentDescription = null) },
-                    text = { Text("Agregar Comentario") },
+                    text = { Text(stringResource(R.string.album_detail_add_comment)) },
                     modifier = Modifier.testTag("add_comment_fab")
                 )
             }
@@ -104,13 +106,13 @@ fun AlbumDetailScreen(
                         modifier = Modifier.align(Alignment.Center),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "Error: ${uiState.error}", color = Color.White)
+                        Text(text = stringResource(R.string.album_detail_error_prefix, uiState.error!!), color = Color.White)
                         Spacer(Modifier.height(16.dp))
                         Button(
                             onClick = { viewModel.loadAlbum(albumId) },
                             colors = ButtonDefaults.buttonColors(containerColor = ColorOrangePrimary)
                         ) {
-                            Text("Reintentar")
+                            Text(stringResource(R.string.album_detail_retry))
                         }
                     }
                 }
@@ -185,7 +187,7 @@ fun CommentSheet(albumId: Int, onDismiss: () -> Unit) {
                 .padding(bottom = 32.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text("Agregar Comentario", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.comment_sheet_title), color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
 
             when (val currentState = state) {
                 is CommentUiState.Loading -> CircularProgressIndicator(color = ColorOrangePrimary, modifier = Modifier.align(Alignment.CenterHorizontally))
@@ -250,7 +252,7 @@ fun CommentSheet(albumId: Int, onDismiss: () -> Unit) {
                         OutlinedTextField(
                             value = email,
                             onValueChange = { email = it },
-                            label = { Text("Correo Electrónico") },
+                            label = { Text(stringResource(R.string.comment_field_email)) },
                             modifier = Modifier.fillMaxWidth().testTag("comment_email_field"),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedTextColor = Color.White,
@@ -266,7 +268,7 @@ fun CommentSheet(albumId: Int, onDismiss: () -> Unit) {
                         OutlinedTextField(
                             value = name,
                             onValueChange = { name = it },
-                            label = { Text("Nombre Completo") },
+                            label = { Text(stringResource(R.string.comment_field_name)) },
                             modifier = Modifier.fillMaxWidth().testTag("comment_name_field"),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedTextColor = Color.White,
@@ -278,7 +280,7 @@ fun CommentSheet(albumId: Int, onDismiss: () -> Unit) {
                         OutlinedTextField(
                             value = telephone,
                             onValueChange = { telephone = it },
-                            label = { Text("Teléfono") },
+                            label = { Text(stringResource(R.string.comment_field_phone)) },
                             modifier = Modifier.fillMaxWidth().testTag("comment_phone_field"),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedTextColor = Color.White,
@@ -289,7 +291,7 @@ fun CommentSheet(albumId: Int, onDismiss: () -> Unit) {
                         )
                     }
 
-                    Text("Calificación", color = Color.White)
+                    Text(stringResource(R.string.comment_field_rating), color = Color.White)
                     Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
                         repeat(5) { index ->
                             IconButton(onClick = { rating = index + 1 }) {
@@ -305,7 +307,7 @@ fun CommentSheet(albumId: Int, onDismiss: () -> Unit) {
                     OutlinedTextField(
                         value = description,
                         onValueChange = { description = it },
-                        label = { Text("Tu comentario") },
+                        label = { Text(stringResource(R.string.comment_field_description)) },
                         modifier = Modifier.fillMaxWidth().height(100.dp).testTag("comment_description_field"),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedTextColor = Color.White,
@@ -327,7 +329,7 @@ fun CommentSheet(albumId: Int, onDismiss: () -> Unit) {
                         colors = ButtonDefaults.buttonColors(containerColor = ColorOrangePrimary),
                         enabled = description.isNotEmpty() && email.isNotEmpty()
                     ) {
-                        Text("Enviar Comentario")
+                        Text(stringResource(R.string.comment_btn_send))
                     }
                 }
             }
@@ -383,7 +385,7 @@ private fun AlbumDetailContent(album: Album) {
 
         // Descripción
         item {
-            SectionTitle("Descripción")
+            SectionTitle(stringResource(R.string.album_detail_description))
             Text(
                 text = album.description,
                 color = Color.White,
@@ -394,24 +396,24 @@ private fun AlbumDetailContent(album: Album) {
 
         // Tracks (Canciones)
         if (album.tracks.isNotEmpty()) {
-            item { SectionTitle("Canciones") }
-            items(album.tracks) { track ->
+            item { SectionTitle(stringResource(R.string.album_detail_tracks)) }
+            items(album.tracks, key = { it.id }) { track ->
                 TrackItem(track)
             }
         }
 
         // Performers (Artistas)
         if (album.performers.isNotEmpty()) {
-            item { SectionTitle("Artistas") }
-            items(album.performers) { performer ->
+            item { SectionTitle(stringResource(R.string.album_detail_performers)) }
+            items(album.performers, key = { it.id }) { performer ->
                 PerformerItem(performer)
             }
         }
 
         // Comments (Comentarios)
         if (album.comments.isNotEmpty()) {
-            item { SectionTitle("Comentarios") }
-            items(album.comments) { comment ->
+            item { SectionTitle(stringResource(R.string.album_detail_comments)) }
+            items(album.comments, key = { it.id }) { comment ->
                 CommentItem(comment)
             }
         }

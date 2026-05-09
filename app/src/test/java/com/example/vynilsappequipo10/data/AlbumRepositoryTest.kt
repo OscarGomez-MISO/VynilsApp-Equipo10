@@ -6,39 +6,46 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
 
 class AlbumRepositoryTest {
 
+    private lateinit var repository: AlbumRepository
     private val service: AlbumService = mockk()
-    private val repository = AlbumRepository(service)
 
-    @Test
-    fun `getAlbums returns list from service`() = runBlocking {
-        // Arrange
-        val expectedAlbums = listOf(
-            Album(1, "Album 1", "cover1", "2023-01-01", "Desc 1", "Genre 1", "Label 1"),
-            Album(2, "Album 2", "cover2", "2023-01-02", "Desc 2", "Genre 2", "Label 2")
-        )
-        coEvery { service.getAlbums() } returns expectedAlbums
-
-        // Act
-        val actualAlbums = repository.getAlbums()
-
-        // Assert
-        assertEquals(expectedAlbums, actualAlbums)
+    @Before
+    fun setup() {
+        repository = AlbumRepository(service)
     }
 
     @Test
-    fun `getAlbumById returns album from service`() = runBlocking {
-        // Arrange
-        val expectedAlbum = Album(1, "Album 1", "cover1", "2023-01-01", "Desc 1", "Genre 1", "Label 1")
-        coEvery { service.getAlbumById(1) } returns expectedAlbum
+    fun `getAlbums returns list of albums`() = runBlocking {
+        // Given
+        val expectedAlbums = listOf(
+            Album(1, "Album 1", "cover1", "2021", "Desc", "Rock", "EMI"),
+            Album(2, "Album 2", "cover2", "2022", "Desc", "Pop", "Sony")
+        )
+        coEvery { service.getAlbums() } returns expectedAlbums
 
-        // Act
-        val actualAlbum = repository.getAlbumById(1)
+        // When
+        val result = repository.getAlbums()
 
-        // Assert
-        assertEquals(expectedAlbum, actualAlbum)
+        // Then
+        assertEquals(expectedAlbums, result)
+    }
+
+    @Test
+    fun `getAlbumById returns specific album`() = runBlocking {
+        // Given
+        val albumId = 1
+        val expectedAlbum = Album(albumId, "Album 1", "cover1", "2021", "Desc", "Rock", "EMI")
+        coEvery { service.getAlbumById(albumId) } returns expectedAlbum
+
+        // When
+        val result = repository.getAlbumById(albumId)
+
+        // Then
+        assertEquals(expectedAlbum, result)
     }
 }

@@ -98,6 +98,7 @@ android {
     testOptions {
         unitTests.isIncludeAndroidResources = true
         animationsDisabled = true
+        unitTests.isReturnDefaultValues = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -140,6 +141,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
 
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
