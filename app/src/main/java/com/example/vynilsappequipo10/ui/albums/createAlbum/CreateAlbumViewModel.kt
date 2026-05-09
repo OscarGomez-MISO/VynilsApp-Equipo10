@@ -6,8 +6,11 @@ import com.example.vynilsappequipo10.data.AlbumRepository
 import com.example.vynilsappequipo10.domain.Album
 import com.example.vynilsappequipo10.domain.AlbumRequest
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 sealed class CreateAlbumUiState {
@@ -36,8 +39,17 @@ class CreateAlbumViewModel(
     private val _formState = MutableStateFlow(AlbumFormState())
     val formState: StateFlow<AlbumFormState> = _formState.asStateFlow()
 
+    val isFormValid: StateFlow<Boolean> = _formState
+        .map { form ->
+            form.name.isNotBlank() && form.cover.isNotBlank() && form.releaseDate.isNotBlank() &&
+                form.description.isNotBlank() && form.genre.isNotBlank() && form.recordLabel.isNotBlank()
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
     val genres = listOf("Classical", "Salsa", "Rock", "Folk")
     val recordLabels = listOf("Sony Music", "EMI", "Discos Fuentes", "Elektra", "Fania Records")
+
+    private var isSubmitting = false
 
     fun updateName(name: String) {
         _formState.value = _formState.value.copy(name = name)
@@ -64,15 +76,16 @@ class CreateAlbumViewModel(
     }
 
     fun createAlbum() {
+        if (isSubmitting) return
         val form = _formState.value
-        
-        // Validación básica
+
         if (form.name.isBlank() || form.cover.isBlank() || form.releaseDate.isBlank() ||
             form.description.isBlank() || form.genre.isBlank() || form.recordLabel.isBlank()) {
             _uiState.value = CreateAlbumUiState.Error("Todos los campos son obligatorios")
             return
         }
 
+        isSubmitting = true
         viewModelScope.launch {
             _uiState.value = CreateAlbumUiState.Loading
             try {
@@ -88,6 +101,8 @@ class CreateAlbumViewModel(
                 _uiState.value = CreateAlbumUiState.Success(createdAlbum)
             } catch (e: Exception) {
                 _uiState.value = CreateAlbumUiState.Error(e.message ?: "Error al crear el álbum")
+            } finally {
+                isSubmitting = false
             }
         }
     }

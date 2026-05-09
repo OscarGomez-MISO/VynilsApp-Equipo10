@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -36,6 +37,7 @@ import com.example.vynilsappequipo10.domain.ArtistType
 import com.example.vynilsappequipo10.ui.artists.artistDetail.ArtistDetailScreen
 import com.example.vynilsappequipo10.ui.collectors.CollectorsScreen
 import com.example.vynilsappequipo10.ui.collectors.collectorDetail.CollectorDetailScreen
+import com.example.vynilsappequipo10.ui.albums.AlbumsViewModel
 import com.example.vynilsappequipo10.ui.theme.ColorBackground
 import com.example.vynilsappequipo10.ui.theme.ColorOrangePrimary
 import com.example.vynilsappequipo10.ui.theme.ColorSurface
@@ -53,6 +55,7 @@ fun MainScreen(isCollector: Boolean, onLogout: () -> Unit) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val context = LocalContext.current
+    val albumsViewModel: AlbumsViewModel = viewModel()
 
     Scaffold(
         containerColor = ColorBackground,
@@ -120,7 +123,8 @@ fun MainScreen(isCollector: Boolean, onLogout: () -> Unit) {
                     onAlbumClick = { albumId ->
                         navController.navigate("album_detail/$albumId")
                     },
-                    onLogout = onLogout
+                    onLogout = onLogout,
+                    viewModel = albumsViewModel
                 )
             }
             composable(
@@ -137,7 +141,10 @@ fun MainScreen(isCollector: Boolean, onLogout: () -> Unit) {
             composable("create_album") {
                 CreateAlbumScreen(
                     onBackClick = { navController.popBackStack() },
-                    onAlbumCreated = { navController.popBackStack() }
+                    onAlbumCreated = {
+                        albumsViewModel.refreshAfterCreate()
+                        navController.popBackStack()
+                    }
                 )
             }
             composable(MainTab.ARTISTS.route) {
