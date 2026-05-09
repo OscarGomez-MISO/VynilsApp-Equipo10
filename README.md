@@ -152,6 +152,26 @@ Para cumplir con el análisis de consumo de recursos en 3 dispositivos físicos,
 2.  **Gama Media** (ej. Android 11/12, 4-6GB RAM): Escenario de uso común.
 3.  **Gama Alta** (ej. Android 13/14, 8GB+ RAM): Para medir fluidez máxima y tiempos de carga.
 
+## Perfilamiento de Recursos (Resource Profiling)
+
+Para cumplir con el análisis de consumo de recursos en 3 dispositivos físicos, se recomienda seguir este flujo usando **Android Studio Profiler**:
+
+1.  **Preparación**: Conecta el dispositivo físico y asegúrate de que la compilación sea de tipo `debug` (o `profileable`).
+2.  **Métricas de Memoria (Memory Profiler)**:
+    *   Navega por la pantalla de álbumes y abre el detalle de al menos 5 álbumes con imágenes pesadas.
+    *   Observa el impacto en el **Heap**. Gracias a la optimización con `Glide`, deberías notar que la memoria se mantiene estable y los Bitmaps se reciclan correctamente.
+    *   Usa **LeakCanary** (ya integrado en la versión debug) para detectar fugas de memoria automáticamente durante la sesión.
+3.  **Métricas de CPU (CPU Profiler)**:
+    *   Realiza scroll rápido en la lista de artistas y comentarios.
+    *   Verifica que no existan picos de uso superiores al 30% gracias a la implementación de `keys` en los `LazyColumn`.
+4.  **Inspección de Red (Network Inspector)**:
+    *   Valida que las peticiones a `/albums` y `/artists` devuelvan solo los campos necesarios y que el tiempo de respuesta sea óptimo (configurado con timeout de 30s).
+
+### Dispositivos Recomendados para el Perfilamiento:
+1.  **Gama Baja** (ej. Android 7/8, 2GB RAM): Para medir el impacto crítico de memoria.
+2.  **Gama Media** (ej. Android 11/12, 4-6GB RAM): Escenario de uso común.
+3.  **Gama Alta** (ej. Android 13/14, 8GB+ RAM): Para medir fluidez máxima y tiempos de carga.
+
 ### Integración Continua (CI):
 El análisis se realiza automáticamente mediante GitHub Actions (`sonar.yml`) bajo las siguientes condiciones:
 1.  Cada vez que se realiza un **Push** a la rama `main`.
@@ -179,4 +199,5 @@ Una vez finalizado el build, el archivo APK generado se encontrará en:
 ### 3. Carpeta de Distribución
 Para facilitar el acceso, hemos habilitado la carpeta llamada `/release` en la raíz del repositorio donde se encuentran las versiones listas para instalar. La versión más reciente es:
 `release/vynils-app-v1.0.1.apk`
+
 

@@ -68,7 +68,7 @@ fun AlbumDetailScreen(
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Regresar",
+                            contentDescription = stringResource(R.string.album_detail_retry), // reusing back logic
                             tint = Color.White
                         )
                     }
