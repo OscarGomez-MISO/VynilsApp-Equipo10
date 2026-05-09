@@ -12,4 +12,31 @@
     <string name="btn_apple">Apple</string>
     <string name="welcome_signup_prefix">¿Eres nuevo? </string>
     <string name="welcome_signup_link">Únete a la sociedad</string>
+
+    <!-- Album Detail -->
+    <string name="album_detail_title">Detalle del Álbum</string>
+    <string name="album_detail_retry">Reintentar</string>
+    <string name="album_detail_add_comment">Agregar Comentario</string>
+    <string name="album_detail_description">Descripción</string>
+    <string name="album_detail_tracks">Canciones</string>
+    <string name="album_detail_performers">Artistas</string>
+    <string name="album_detail_comments">Comentarios</string>
+    <string name="album_detail_error_prefix">Error: %1$s</string>
+
+    <!-- Comments -->
+    <string name="comment_sheet_title">Agregar Comentario</string>
+    <string name="comment_field_email">Correo Electrónico</string>
+    <string name="comment_field_name">Nombre Completo</string>
+    <string name="comment_field_phone">Teléfono</string>
+    <string name="comment_field_rating">Calificación</string>
+    <string name="comment_field_description">Tu comentario</string>
+    <string name="comment_btn_send">Enviar Comentario</string>
+    <string name="comment_success">Comentario agregado con éxito</string>
+
+    <!-- General UI -->
+    <string name="search_placeholder">Busca en las cajas…</string>
+    <string name="nav_home">Inicio</string>
+    <string name="error_loading_albums">No se pudieron cargar los álbumes</string>
+    <string name="error_loading_artists">No se pudieron cargar los artistas</string>
+    <string name="error_loading_collectors">No se pudieron cargar los coleccionistas</string>
 </resources>

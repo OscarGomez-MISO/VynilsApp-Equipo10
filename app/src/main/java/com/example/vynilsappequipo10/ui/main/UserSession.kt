@@ -7,13 +7,13 @@ class UserSession(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("vynils_prefs", Context.MODE_PRIVATE)
 
     fun saveCollector(id: Int, email: String) {
-        prefs.edit().putInt("collector_id", id).putString("collector_email", email).commit()
+        prefs.edit().putInt("collector_id", id).putString("collector_email", email).apply()
     }
 
     fun getCollectorId(): Int = prefs.getInt("collector_id", -1)
     fun getCollectorEmail(): String? = prefs.getString("collector_email", null)
 
     fun clear() {
-        prefs.edit().clear().commit()
+        prefs.edit().clear().apply()
     }
 }
