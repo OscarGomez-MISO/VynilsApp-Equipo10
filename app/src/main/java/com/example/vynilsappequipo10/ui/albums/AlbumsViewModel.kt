@@ -36,11 +36,24 @@ class AlbumsViewModel(
                 val albums = repository.getAlbums()
                 allAlbums.clear()
                 allAlbums.addAll(albums)
-                _uiState.update { it.copy(albums = albums, isLoading = false) }
+                val query = _uiState.value.searchQuery
+                _uiState.update {
+                    it.copy(
+                        albums = if (query.isBlank()) albums else albums.filter { album ->
+                            album.name.contains(query, ignoreCase = true) ||
+                            album.genre.contains(query, ignoreCase = true)
+                        },
+                        isLoading = false
+                    )
+                }
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false, error = e.message ?: "Error desconocido") }
             }
         }
+    }
+
+    fun refreshAfterCreate() {
+        loadAlbums()
     }
 
     fun onSearchQueryChange(query: String) {

@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.vynilsappequipo10.data.CollectorRepository
 import com.example.vynilsappequipo10.domain.CollectorAlbumWithAlbum
 import com.example.vynilsappequipo10.domain.CollectorDetail
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,8 +27,11 @@ class CollectorDetailViewModel(
     private val _uiState = MutableStateFlow(CollectorDetailUiState())
     val uiState: StateFlow<CollectorDetailUiState> = _uiState.asStateFlow()
 
+    private var loadJob: Job? = null
+
     fun loadCollector(id: Int) {
-        viewModelScope.launch {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             _uiState.value = CollectorDetailUiState(isLoading = true)
             try {
                 val detailDeferred = async { repository.getCollectorById(id) }
@@ -36,6 +41,8 @@ class CollectorDetailViewModel(
                     collectorAlbums = albumsDeferred.await(),
                     isLoading = false
                 )
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 _uiState.value = CollectorDetailUiState(
                     isLoading = false,

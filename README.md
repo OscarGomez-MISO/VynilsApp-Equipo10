@@ -112,6 +112,14 @@ Se han aplicado micro-optimizaciones y mejores prácticas para garantizar una ex
 2.  **Gestión de Memoria**: Uso de la librería **Glide** con integración nativa para Compose, que gestiona automáticamente el cacheo de imágenes, el redimensionamiento y la liberación de memoria de mapas de bits.
 3.  **Eficiencia en Listas**: Implementación de `LazyColumn` en el detalle del álbum para un renderizado eficiente de canciones, artistas y comentarios, minimizando el consumo de recursos en álbumes con mucho contenido.
 
+### Optimización del Flujo Crear Álbum y Listado de Álbumes:
+Se han aplicado mejoras de rendimiento y experiencia de usuario en la funcionalidad de **Crear Álbum** y el **Listado de Álbumes**:
+1.  **Auto-recarga de la lista tras crear álbum**: Al crear un álbum exitosamente, la lista de álbumes se recarga automáticamente para reflejar el nuevo álbum sin necesidad de navegar manualmente ni reiniciar la app. Esto se logra compartiendo una instancia de `AlbumsViewModel` entre `MainScreen` y `AlbumsScreen`.
+2.  **Prevención de doble envío**: Se implementó un guard (`isSubmitting`) en `CreateAlbumViewModel` para evitar que el usuario envíe el formulario múltiples veces al hacer clic rápido en el botón de crear.
+3.  **Validación reactiva del formulario**: Se agregó un `StateFlow<Boolean>` (`isFormValid`) derivado del estado del formulario que deshabilita el botón "Crear Álbum" hasta que todos los campos estén completos, proporcionando retroalimentación visual inmediata al usuario.
+4.  **Preservación del filtro de búsqueda tras recarga**: Al recargar la lista después de crear un álbum, se mantiene el query de búsqueda activo, evitando que el usuario pierda su contexto de navegación.
+5.  **Internacionalización (i18n)**: Todos los textos hardcodeados de la pantalla de creación de álbum fueron extraídos a `strings.xml` usando `stringResource()`, facilitando futuras traducciones y cumpliendo con las mejores prácticas de Android.
+
 ### Herramientas y Reportes:
 *   **JaCoCo**: Se utiliza para medir la cobertura del código. Genera reportes en formato XML que son consumidos por SonarCloud.
 *   **SonarScanner**: Analiza el código en busca de bugs, vulnerabilidades y code smells.
@@ -123,6 +131,26 @@ Si deseas generar el reporte de cobertura manualmente en tu máquina, ejecuta:
 ```
 Al finalizar, podrás encontrar el reporte detallado en:
 `app/build/reports/jacoco/jacocoTestReport/html/index.html`
+
+## Perfilamiento de Recursos (Resource Profiling)
+
+Para cumplir con el análisis de consumo de recursos en 3 dispositivos físicos, se recomienda seguir este flujo usando **Android Studio Profiler**:
+
+1.  **Preparación**: Conecta el dispositivo físico y asegúrate de que la compilación sea de tipo `debug` (o `profileable`).
+2.  **Métricas de Memoria (Memory Profiler)**:
+    *   Navega por la pantalla de álbumes y abre el detalle de al menos 5 álbumes con imágenes pesadas.
+    *   Observa el impacto en el **Heap**. Gracias a la optimización con `Glide`, deberías notar que la memoria se mantiene estable y los Bitmaps se reciclan correctamente.
+    *   Usa **LeakCanary** (ya integrado en la versión debug) para detectar fugas de memoria automáticamente durante la sesión.
+3.  **Métricas de CPU (CPU Profiler)**:
+    *   Realiza scroll rápido en la lista de artistas y comentarios.
+    *   Verifica que no existan picos de uso superiores al 30% gracias a la implementación de `keys` en los `LazyColumn`.
+4.  **Inspección de Red (Network Inspector)**:
+    *   Valida que las peticiones a `/albums` y `/artists` devuelvan solo los campos necesarios y que el tiempo de respuesta sea óptimo (configurado con timeout de 30s).
+
+### Dispositivos Recomendados para el Perfilamiento:
+1.  **Gama Baja** (ej. Android 7/8, 2GB RAM): Para medir el impacto crítico de memoria.
+2.  **Gama Media** (ej. Android 11/12, 4-6GB RAM): Escenario de uso común.
+3.  **Gama Alta** (ej. Android 13/14, 8GB+ RAM): Para medir fluidez máxima y tiempos de carga.
 
 ## Perfilamiento de Recursos (Resource Profiling)
 
@@ -171,4 +199,5 @@ Una vez finalizado el build, el archivo APK generado se encontrará en:
 ### 3. Carpeta de Distribución
 Para facilitar el acceso, hemos habilitado la carpeta llamada `/release` en la raíz del repositorio donde se encuentran las versiones listas para instalar. La versión más reciente es:
 `release/vynils-app-v1.0.1.apk`
+
 

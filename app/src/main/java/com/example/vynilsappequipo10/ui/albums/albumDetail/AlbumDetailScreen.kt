@@ -1,7 +1,6 @@
 package com.example.vynilsappequipo10.ui.albums.albumDetail
 
 import android.graphics.drawable.ColorDrawable
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -171,7 +170,6 @@ fun CommentSheet(albumId: Int, onDismiss: () -> Unit) {
             email = currentEmail
             isChangingUser = false
         }
-        Log.d("CommentSheet", "Opening sheet. Session ID: $currentId, Email: $currentEmail")
     }
 
     ModalBottomSheet(
@@ -184,7 +182,8 @@ fun CommentSheet(albumId: Int, onDismiss: () -> Unit) {
                 .padding(16.dp)
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(bottom = 32.dp),
+                .padding(bottom = 32.dp)
+                .testTag("comment_sheet_content"),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(stringResource(R.string.comment_sheet_title), color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)

@@ -188,14 +188,14 @@ class VynilsE2ETest {
         composeTestRule.onNodeWithTag("comment_description_field").performTextInput("Sesion de prueba automatizada $timestamp")
         composeTestRule.onNodeWithTag("comment_send_button").performScrollTo().performClick()
         
-        // Esperar cierre o avance a perfil (validando por elementos internos de la hoja)
+        // Esperar cierre o avance a perfil (usando testTag del sheet para no depender de textos que cambian con el estado)
         composeTestRule.waitUntil(45000) {
-            // "Calificación" solo existe dentro de la hoja de comentarios
-            val isSheetOpen = composeTestRule.onAllNodes(hasText("Calificación")).fetchSemanticsNodes().isNotEmpty()
+            val isSheetOpen = composeTestRule.onAllNodes(hasTestTag("comment_sheet_content")).fetchSemanticsNodes().isNotEmpty()
             val needsProfile = composeTestRule.onAllNodes(hasText("Perfil no encontrado", substring = true)).fetchSemanticsNodes().isNotEmpty()
             val hasSuccess = composeTestRule.onAllNodes(hasTestTag("comment_success_message")).fetchSemanticsNodes().isNotEmpty()
-            
-            !isSheetOpen || needsProfile || hasSuccess
+            val hasError = composeTestRule.onAllNodes(hasTestTag("comment_error_message")).fetchSemanticsNodes().isNotEmpty()
+
+            !isSheetOpen || needsProfile || hasSuccess || hasError
         }
 
         // Si se quedó en perfil, completamos los datos
@@ -206,11 +206,16 @@ class VynilsE2ETest {
             composeTestRule.onNodeWithTag("comment_send_button").performScrollTo().performClick()
         }
 
-        // VALIDACIÓN MEJORADA: Esperar éxito O error
-        composeTestRule.waitUntil(45000) {
-            val hasSuccess = composeTestRule.onAllNodes(hasTestTag("comment_success_message")).fetchSemanticsNodes().isNotEmpty()
-            val hasError = composeTestRule.onAllNodes(hasTestTag("comment_error_message")).fetchSemanticsNodes().isNotEmpty()
-            hasSuccess || hasError
+        // Si ya hay resultado del primer wait, no esperar de nuevo
+        val alreadyResolved = composeTestRule.onAllNodes(hasTestTag("comment_success_message")).fetchSemanticsNodes().isNotEmpty() ||
+            composeTestRule.onAllNodes(hasTestTag("comment_error_message")).fetchSemanticsNodes().isNotEmpty()
+
+        if (!alreadyResolved) {
+            composeTestRule.waitUntil(45000) {
+                val hasSuccess = composeTestRule.onAllNodes(hasTestTag("comment_success_message")).fetchSemanticsNodes().isNotEmpty()
+                val hasError = composeTestRule.onAllNodes(hasTestTag("comment_error_message")).fetchSemanticsNodes().isNotEmpty()
+                hasSuccess || hasError
+            }
         }
 
         if (composeTestRule.onAllNodes(hasTestTag("comment_error_message")).fetchSemanticsNodes().isNotEmpty()) {
