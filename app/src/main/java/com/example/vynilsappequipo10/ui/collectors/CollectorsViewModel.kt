@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vynilsappequipo10.data.CollectorRepository
 import com.example.vynilsappequipo10.domain.Collector
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,18 +27,23 @@ class CollectorsViewModel(
     private val _uiState = MutableStateFlow(CollectorsUiState(isLoading = true))
     val uiState: StateFlow<CollectorsUiState> = _uiState.asStateFlow()
 
+    private var loadJob: Job? = null
+
     init {
         loadCollectors()
     }
 
     fun loadCollectors() {
-        viewModelScope.launch {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             try {
                 val collectors = repository.getCollectors()
                 allCollectors.clear()
                 allCollectors.addAll(collectors)
                 _uiState.update { it.copy(collectors = collectors, isLoading = false) }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false, error = e.message ?: "Error desconocido") }
             }

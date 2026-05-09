@@ -1,7 +1,6 @@
 package com.example.vynilsappequipo10.ui.albums.albumDetail
 
 import android.graphics.drawable.ColorDrawable
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -171,7 +170,6 @@ fun CommentSheet(albumId: Int, onDismiss: () -> Unit) {
             email = currentEmail
             isChangingUser = false
         }
-        Log.d("CommentSheet", "Opening sheet. Session ID: $currentId, Email: $currentEmail")
     }
 
     ModalBottomSheet(

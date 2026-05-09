@@ -1,6 +1,7 @@
 package com.example.vynilsappequipo10.data.remote
 
 import com.example.vynilsappequipo10.BuildConfig
+import okhttp3.ConnectionPool
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -14,6 +15,7 @@ object RetrofitClient {
             .connectTimeout(NETWORK_TIMEOUT, TimeUnit.SECONDS)
             .readTimeout(NETWORK_TIMEOUT, TimeUnit.SECONDS)
             .writeTimeout(NETWORK_TIMEOUT, TimeUnit.SECONDS)
+            .connectionPool(ConnectionPool(3, 5, TimeUnit.MINUTES))
             .build()
     }
 

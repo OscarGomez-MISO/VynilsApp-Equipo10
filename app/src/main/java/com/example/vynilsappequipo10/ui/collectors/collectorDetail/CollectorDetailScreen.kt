@@ -249,7 +249,7 @@ private fun CollectionSection(
 
         Spacer(Modifier.height(16.dp))
 
-        val rows = albums.chunked(2)
+        val rows = remember(albums) { albums.chunked(2) }
         rows.forEach { row ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
