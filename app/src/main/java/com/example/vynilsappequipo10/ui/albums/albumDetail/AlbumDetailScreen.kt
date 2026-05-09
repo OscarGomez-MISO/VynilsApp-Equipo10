@@ -69,7 +69,7 @@ fun AlbumDetailScreen(
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.album_detail_retry), // reusing back logic
+                            contentDescription = "Regresar",
                             tint = Color.White
                         )
                     }
@@ -184,7 +184,8 @@ fun CommentSheet(albumId: Int, onDismiss: () -> Unit) {
                 .padding(16.dp)
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(bottom = 32.dp),
+                .padding(bottom = 32.dp)
+                .testTag("comment_sheet_content"),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(stringResource(R.string.comment_sheet_title), color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)

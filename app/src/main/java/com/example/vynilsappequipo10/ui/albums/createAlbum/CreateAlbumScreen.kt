@@ -378,7 +378,6 @@ private fun CreateAlbumForm(
         // Botón Crear
         Button(
             onClick = { viewModel.createAlbum() },
-            enabled = isFormValid,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
