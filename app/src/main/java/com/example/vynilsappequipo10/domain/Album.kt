@@ -1,7 +1,9 @@
 package com.example.vynilsappequipo10.domain
 
+import androidx.compose.runtime.Immutable
 import com.google.gson.annotations.SerializedName
 
+@Immutable
 data class Album(
     val id: Int,
     val name: String,

@@ -1,5 +1,7 @@
 package com.example.vynilsappequipo10.domain
 
+import androidx.compose.runtime.Immutable
+
 data class CollectorAlbum(
     val id: Int,
     val price: Double,
@@ -21,6 +23,7 @@ data class FavoritePerformer(
     val description: String
 )
 
+@Immutable
 data class CollectorAlbumWithAlbum(
     val id: Int,
     val price: Double,
@@ -28,6 +31,7 @@ data class CollectorAlbumWithAlbum(
     val album: Album
 )
 
+@Immutable
 data class CollectorDetail(
     val id: Int,
     val name: String,
