@@ -119,4 +119,75 @@ class CommentViewModelTest {
         // Then
         assertEquals(CommentUiState.Idle, viewModel.state.value)
     }
+
+    @Test
+    fun `postComment error when addComment fails`() = runTest {
+        // Given
+        val email = "test@test.com"
+        val errorMessage = "Network error"
+        every { userSession.getCollectorId() } returns 100
+        every { userSession.getCollectorEmail() } returns email
+        coEvery { albumRepository.addComment(any(), any()) } throws Exception(errorMessage)
+
+        // When
+        viewModel.postComment(1, "Great album", 5, email)
+
+        // Then
+        assertTrue(viewModel.state.value is CommentUiState.Error)
+        assertEquals(errorMessage, (viewModel.state.value as CommentUiState.Error).message)
+    }
+
+    @Test
+    fun `postComment with different email searches for collector`() = runTest {
+        // Given
+        val sessionEmail = "session@test.com"
+        val newEmail = "new@test.com"
+        val collector = Collector(id = 200, name = "New Collector", telephone = "123", email = newEmail)
+        
+        every { userSession.getCollectorId() } returns 100
+        every { userSession.getCollectorEmail() } returns sessionEmail
+        coEvery { collectorRepository.getCollectors() } returns listOf(collector)
+        coEvery { albumRepository.addComment(any(), any()) } returns mockk()
+
+        // When
+        viewModel.postComment(1, "Nice", 4, newEmail)
+
+        // Then
+        assertTrue(viewModel.state.value is CommentUiState.Success)
+        verify { userSession.saveCollector(200, newEmail) }
+    }
+
+    @Test
+    fun `postComment error without message uses default`() = runTest {
+        // Given
+        val email = "test@test.com"
+        every { userSession.getCollectorId() } returns 100
+        every { userSession.getCollectorEmail() } returns email
+        coEvery { albumRepository.addComment(any(), any()) } throws Exception()
+
+        // When
+        viewModel.postComment(1, "Great album", 5, email)
+
+        // Then
+        assertTrue(viewModel.state.value is CommentUiState.Error)
+        assertEquals("Error al procesar", (viewModel.state.value as CommentUiState.Error).message)
+    }
+
+    @Test
+    fun `postComment handles createCollector failure with retry finding existing`() = runTest {
+        // Given
+        val email = "new@test.com"
+        val collector = Collector(id = 300, name = "New User", telephone = "999", email = email)
+        
+        every { userSession.getCollectorId() } returns -1
+        coEvery { collectorRepository.getCollectors() } returns emptyList() andThen listOf(collector)
+        coEvery { collectorRepository.createCollector(any()) } throws Exception("Create failed")
+        coEvery { albumRepository.addComment(any(), any()) } returns mockk()
+
+        // When
+        viewModel.postComment(1, "Great", 5, email, name = "New User", telephone = "999")
+
+        // Then
+        assertTrue(viewModel.state.value is CommentUiState.Success)
+    }
 }

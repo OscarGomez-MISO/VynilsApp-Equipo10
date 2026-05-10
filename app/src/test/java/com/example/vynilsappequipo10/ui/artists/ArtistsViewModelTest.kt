@@ -4,6 +4,7 @@ import com.example.vynilsappequipo10.data.ArtistRepository
 import com.example.vynilsappequipo10.domain.Artist
 import com.example.vynilsappequipo10.domain.ArtistType
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -83,5 +84,84 @@ class ArtistsViewModelTest {
         // Assert
         assertEquals(1, viewModel.uiState.value.artists.size)
         assertEquals("Rubén Blades", viewModel.uiState.value.artists[0].name)
+    }
+
+    @Test
+    fun `onSearchQueryChange with empty query shows all artists`() {
+        // Arrange
+        val artists = listOf(
+            Artist(1, "Rubén Blades", "img1", "desc1", "date1", emptyList(), ArtistType.MUSICIAN),
+            Artist(2, "Queen", "img2", "desc2", "date2", emptyList(), ArtistType.BAND)
+        )
+        coEvery { repository.getArtists() } returns artists
+        viewModel = ArtistsViewModel(repository)
+        viewModel.onSearchQueryChange("rubén") // Apply filter first
+
+        // Act
+        viewModel.onSearchQueryChange("")
+
+        // Assert
+        assertEquals(2, viewModel.uiState.value.artists.size)
+        assertEquals("", viewModel.uiState.value.searchQuery)
+    }
+
+    @Test
+    fun `loadArtists with exception without message uses default error`() {
+        // Arrange
+        coEvery { repository.getArtists() } throws Exception()
+
+        // Act
+        viewModel = ArtistsViewModel(repository)
+
+        // Assert
+        assertEquals("Error desconocido", viewModel.uiState.value.error)
+    }
+
+    @Test
+    fun `loadArtists returns empty list`() {
+        // Arrange
+        coEvery { repository.getArtists() } returns emptyList()
+
+        // Act
+        viewModel = ArtistsViewModel(repository)
+
+        // Assert
+        assertTrue(viewModel.uiState.value.artists.isEmpty())
+        assertFalse(viewModel.uiState.value.isLoading)
+        assertEquals(null, viewModel.uiState.value.error)
+    }
+
+    @Test
+    fun `onSearchQueryChange with no matching results returns empty list`() {
+        // Arrange
+        val artists = listOf(
+            Artist(1, "Rubén Blades", "img1", "desc1", "date1", emptyList(), ArtistType.MUSICIAN),
+            Artist(2, "Queen", "img2", "desc2", "date2", emptyList(), ArtistType.BAND)
+        )
+        coEvery { repository.getArtists() } returns artists
+        viewModel = ArtistsViewModel(repository)
+
+        // Act
+        viewModel.onSearchQueryChange("nonexistent")
+
+        // Assert
+        assertTrue(viewModel.uiState.value.artists.isEmpty())
+        assertEquals("nonexistent", viewModel.uiState.value.searchQuery)
+    }
+
+    @Test
+    fun `loadArtists can be called manually to refresh`() {
+        // Arrange
+        val artists = listOf(
+            Artist(1, "Artist 1", "img1", "desc1", "date1", emptyList(), ArtistType.MUSICIAN)
+        )
+        coEvery { repository.getArtists() } returns artists
+        viewModel = ArtistsViewModel(repository)
+
+        // Act
+        viewModel.loadArtists()
+
+        // Assert
+        coVerify(exactly = 2) { repository.getArtists() } // Once in init, once in manual call
     }
 }
