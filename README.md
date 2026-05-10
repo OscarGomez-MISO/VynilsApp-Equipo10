@@ -15,6 +15,7 @@ Para ejecutar este proyecto en tu máquina local sin problemas, asegúrate de co
 4.  **Gradle**: Versión **9.3.1** o superior.
 5.  **Internet**: Necesario para la descarga de dependencias y el consumo de la API en Heroku (https://back-vynils-equipo10-c7f5ef54eafe.herokuapp.com/)
 
+
 ## Especificaciones Técnicas y Versiones
 
 | Componente | Versión |

@@ -427,19 +427,19 @@ private fun LazyListScope.albumDescriptionSection(album: Album) {
 private fun LazyListScope.albumTracksSection(tracks: List<Track>) {
     if (tracks.isEmpty()) return
     item { SectionTitle(stringResource(R.string.album_detail_tracks)) }
-    items(tracks, key = { it.id }) { TrackItem(it) }
+    items(tracks, key = { "track_${it.id}" }) { TrackItem(it) }
 }
 
 private fun LazyListScope.albumPerformersSection(performers: List<Performer>) {
     if (performers.isEmpty()) return
     item { SectionTitle(stringResource(R.string.album_detail_performers)) }
-    items(performers, key = { it.id }) { PerformerItem(it) }
+    items(performers, key = { "performer_${it.id}" }) { PerformerItem(it) }
 }
 
 private fun LazyListScope.albumCommentsSection(comments: List<Comment>) {
     if (comments.isEmpty()) return
     item { SectionTitle(stringResource(R.string.album_detail_comments)) }
-    items(comments, key = { it.id }) { CommentItem(it) }
+    items(comments, key = { "comment_${it.id}" }) { CommentItem(it) }
 }
 
 @Composable
