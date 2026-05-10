@@ -154,7 +154,7 @@ private fun CollectorsContent(
                 }
             }
         } else {
-            items(uiState.collectors, key = { it.id ?: it.email }) { collector ->
+            items(uiState.collectors, key = { "collector_${it.id ?: it.email}" }) { collector ->
                 CollectorRow(collector = collector, onClick = { collector.id?.let { onCollectorClick(it) } })
             }
         }

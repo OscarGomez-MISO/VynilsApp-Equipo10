@@ -168,7 +168,7 @@ private fun ArtistsContent(
             )
         }
 
-        items(uiState.artists, key = { it.id }) { artist ->
+        items(uiState.artists, key = { "artist_${it.id}" }) { artist ->
 
             ArtistRow(
                 artist = artist,
