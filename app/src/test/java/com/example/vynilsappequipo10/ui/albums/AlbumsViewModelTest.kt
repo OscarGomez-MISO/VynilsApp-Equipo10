@@ -3,6 +3,7 @@ package com.example.vynilsappequipo10.ui.albums
 import com.example.vynilsappequipo10.data.AlbumRepository
 import com.example.vynilsappequipo10.domain.Album
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -102,5 +103,71 @@ class AlbumsViewModelTest {
         // Assert
         assertEquals(2, viewModel.uiState.value.albums.size)
         assertEquals("", viewModel.uiState.value.searchQuery)
+    }
+
+    @Test
+    fun `onSearchQueryChange filters by genre`() {
+        // Arrange
+        val albums = listOf(
+            Album(1, "Album One", "cover1", "2023-01-01", "Desc 1", "Salsa", "Label 1"),
+            Album(2, "Album Two", "cover2", "2023-01-02", "Desc 2", "Rock", "Label 2"),
+            Album(3, "Album Three", "cover3", "2023-01-03", "Desc 3", "Salsa", "Label 3")
+        )
+        coEvery { repository.getAlbums() } returns albums
+        viewModel = AlbumsViewModel(repository)
+
+        // Act
+        viewModel.onSearchQueryChange("Rock")
+
+        // Assert
+        assertEquals(1, viewModel.uiState.value.albums.size)
+        assertEquals("Rock", viewModel.uiState.value.albums[0].genre)
+    }
+
+    @Test
+    fun `refreshAfterCreate reloads albums`() {
+        // Arrange
+        val albums = listOf(
+            Album(1, "Album 1", "cover1", "2023-01-01", "Desc 1", "Genre 1", "Label 1")
+        )
+        coEvery { repository.getAlbums() } returns albums
+        viewModel = AlbumsViewModel(repository)
+
+        // Act
+        viewModel.refreshAfterCreate()
+
+        // Assert
+        coVerify(exactly = 2) { repository.getAlbums() } // Once in init, once in refresh
+    }
+
+    @Test
+    fun `loadAlbums with exception without message uses default error`() {
+        // Arrange
+        coEvery { repository.getAlbums() } throws Exception()
+
+        // Act
+        viewModel = AlbumsViewModel(repository)
+
+        // Assert
+        assertEquals("Error desconocido", viewModel.uiState.value.error)
+    }
+
+    @Test
+    fun `onSearchQueryChange preserves filter after reload`() {
+        // Arrange
+        val albums = listOf(
+            Album(1, "Salsa Party", "cover1", "2023-01-01", "Desc 1", "Salsa", "Label 1"),
+            Album(2, "Rock Classics", "cover2", "2023-01-02", "Desc 2", "Rock", "Label 2")
+        )
+        coEvery { repository.getAlbums() } returns albums
+        viewModel = AlbumsViewModel(repository)
+        viewModel.onSearchQueryChange("salsa")
+
+        // Act - reload with same filter active
+        viewModel.loadAlbums()
+
+        // Assert - filter is preserved
+        assertEquals("salsa", viewModel.uiState.value.searchQuery)
+        assertEquals(1, viewModel.uiState.value.albums.size)
     }
 }

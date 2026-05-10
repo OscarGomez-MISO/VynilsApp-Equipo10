@@ -13,6 +13,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 
@@ -66,5 +67,44 @@ class ArtistDetailViewModelTest {
         assertEquals(null, viewModel.uiState.value.artist)
         assertFalse(viewModel.uiState.value.isLoading)
         assertEquals(errorMessage, viewModel.uiState.value.error)
+    }
+
+    @Test
+    fun `loadArtist with BAND type success`() {
+        // Arrange
+        val artistId = 2
+        val artistType = ArtistType.BAND
+        val band = Artist(artistId, "Queen", "img", "Rock band", "1970", emptyList(), artistType)
+        coEvery { repository.getArtistById(artistId, artistType) } returns band
+
+        // Act
+        viewModel.loadArtist(artistId, artistType)
+
+        // Assert
+        assertEquals(band, viewModel.uiState.value.artist)
+        assertEquals(ArtistType.BAND, viewModel.uiState.value.artist?.type)
+        assertFalse(viewModel.uiState.value.isLoading)
+    }
+
+    @Test
+    fun `loadArtist with exception without message uses default error`() {
+        // Arrange
+        val artistId = 1
+        val artistType = ArtistType.MUSICIAN
+        coEvery { repository.getArtistById(artistId, artistType) } throws Exception()
+
+        // Act
+        viewModel.loadArtist(artistId, artistType)
+
+        // Assert
+        assertEquals("Error desconocido", viewModel.uiState.value.error)
+    }
+
+    @Test
+    fun `initial state has null artist and not loading`() {
+        // Assert
+        assertNull(viewModel.uiState.value.artist)
+        assertFalse(viewModel.uiState.value.isLoading)
+        assertNull(viewModel.uiState.value.error)
     }
 }

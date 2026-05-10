@@ -147,7 +147,7 @@ private fun AlbumsContent(
             )
         }
         item(span = { GridItemSpan(2) }) { Spacer(Modifier.height(4.dp)) }
-        items(uiState.albums, key = { it.id }) { album -> AlbumCard(album, onAlbumClick) }
+        items(uiState.albums, key = { "album_${it.id}" }) { album -> AlbumCard(album, onAlbumClick) }
         item(span = { GridItemSpan(2) }) { Spacer(Modifier.height(8.dp)) }
     }
 }
