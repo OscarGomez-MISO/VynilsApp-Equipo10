@@ -23,5 +23,6 @@ El usuario realiza el proceso de registro de una reseña para un álbum:
 - **Impacto:** Bajo.
 
 ## 3. Evidencia
-![Gráfica Profiler](evidencia_grafica.png)
-Archivo de sesión: `cpu-perfetto-20260509T190705.trace`
+[Gráfica Profiler](evidencia_grafica.png)
+
+[Archivo .trace de sesión](https://uniandes-my.sharepoint.com/:u:/g/personal/oj_gomezo1_uniandes_edu_co/IQAU82AJa-wDRqULXkI4WhciAdcVMD_ZEie7AMxi6GMH3d4?e=1fNG8x)

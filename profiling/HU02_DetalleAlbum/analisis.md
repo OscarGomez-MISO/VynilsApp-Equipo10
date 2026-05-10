@@ -26,5 +26,6 @@ El usuario realiza el siguiente flujo de navegación:
 - **Impacto:** Bajo.
 
 ## 3. Evidencia
-![Gráfica Profiler](evidencia_grafica.png)
-Archivo de sesión: `cpu-perfetto-20260509T185501.trace`
+[Gráfica Profiler](evidencia_grafica.png)
+
+[Archivo .trace de sesión](https://uniandes-my.sharepoint.com/:u:/g/personal/oj_gomezo1_uniandes_edu_co/IQCcRh9acEkhRZwN2zRz3ODcAc7OlPFaw9i7TBpRVKAY9pY?e=sd2Coh)
