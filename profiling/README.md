@@ -12,6 +12,9 @@ Cada carpeta contiene:
 - [HU01 - Lista de Álbumes](./HU01_ListaAlbumes/analisis.md)
 - [HU02 - Detalle de Álbum](./HU02_DetalleAlbum/analisis.md)
 - [HU03 - Crear Comentario](./HU03_CrearComentario/analisis.md)
+- [HU04 - Detalle de Artista](./HU04_DetalleArtista/analisis.md)
+- [HU05 - Listado de Coleccionistas](./HU05_ListadoColeccionistas/analisis.md)
+- [HU06 - Detalle de Coleccionista](./HU06_DetalleColeccionista/analisis.md)
 
 ## Cómo verificar
 1. Los archivos `.asprof` pueden abrirse en Android Studio arrastrándolos a la ventana principal.
